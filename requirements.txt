@@ -1,0 +1,10 @@
+fastapi==0.120.2
+uvicorn[standard]==0.38.0
+python-dotenv==1.2.1
+anthropic==0.72.0
+langgraph==1.0.2
+langchain==1.0.3
+langchain-anthropic==1.0.0
+replicate==1.0.7
+pydantic==2.12.3
+httpx==0.28.1
