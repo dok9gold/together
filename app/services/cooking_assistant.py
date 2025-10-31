@@ -29,7 +29,7 @@ class CookingState(TypedDict):
     confidence: float  # 의도 파악 확신도
     recipe_text: str  # 레시피 생성 결과 (단일)
     recipes: List[Dict[str, Any]]  # 레시피 목록 (복수)
-    dish_name: str  # 요리명
+    dish_names: List[str]  # 요리명 목록 (추천/레시피에서 추출)
     recommendation: str  # 음식 추천 결과
     answer: str  # 질문 답변 결과
     image_prompt: str  # 이미지 생성 프롬프트
@@ -233,9 +233,14 @@ class CookingAssistant:
 
 """
 
+            # 우선순위에 따라 요리명 결정
+            # 1순위: entities.dishes (사용자 명시적 요청)
+            # 2순위: state["dish_names"] (추천받은 요리)
+            target_dishes = dishes if dishes else state.get("dish_names", [])
+
             # 엔티티 정보 추가
-            if dishes:
-                base_prompt += f"요리명: {', '.join(dishes)}\n"
+            if target_dishes:
+                base_prompt += f"요리명: {', '.join(target_dishes)}\n"
             if ingredients:
                 base_prompt += f"사용 재료: {', '.join(ingredients)}\n"
             if constraints:
@@ -262,10 +267,15 @@ class CookingAssistant:
     "difficulty": "난이도 (쉬움/중간/어려움 중 하나)"
 }"""
 
-            # 특정 요리명이 있으면 그것을 중심으로, 없으면 재료 기반
-            if dishes:
-                prompt = base_prompt + f"\n\n위 정보를 바탕으로 '{dishes[0]}'의 레시피를 작성하세요."
+            # 우선순위에 따른 프롬프트 생성
+            if target_dishes:
+                # entities.dishes 또는 추천받은 dish_names 사용
+                if len(target_dishes) == 1:
+                    prompt = base_prompt + f"\n\n위 정보를 바탕으로 '{target_dishes[0]}'의 레시피를 작성하세요."
+                else:
+                    prompt = base_prompt + f"\n\n위 정보를 바탕으로 {', '.join(target_dishes)} 각각의 레시피를 작성하세요."
             elif ingredients:
+                # 재료 기반
                 prompt = base_prompt + f"\n\n위 재료를 활용한 레시피를 작성하세요."
             else:
                 # 엔티티가 없으면 기존 방식대로
@@ -296,13 +306,15 @@ class CookingAssistant:
                 logger.info(f"[파싱 완료] 복수 레시피 타입: {type(recipe_data).__name__}, 개수: {len(recipe_data)}")
                 state["recipes"] = recipe_data
                 state["recipe_text"] = recipe_json
-                # 첫 번째 요리명을 대표로 저장 (이미지 생성용)
-                state["dish_name"] = recipe_data[0].get("title", "") if recipe_data else ""
+                # 요리명 목록을 dish_names에 저장
+                state["dish_names"] = [r.get("title", "") for r in recipe_data if r.get("title")]
             elif isinstance(recipe_data, dict):
                 # 단일 레시피 (딕셔너리 형식)
                 logger.info(f"[파싱 완료] 단일 레시피 타입: {type(recipe_data).__name__}, 키: {list(recipe_data.keys())}")
                 state["recipe_text"] = recipe_json
-                state["dish_name"] = recipe_data.get("title", "")
+                # 단일 요리명을 리스트로 dish_names에 저장
+                title = recipe_data.get("title", "")
+                state["dish_names"] = [title] if title else []
             else:
                 raise TypeError(f"레시피 데이터는 딕셔너리 또는 리스트여야 합니다. 현재 타입: {type(recipe_data).__name__}, 값: {recipe_data}")
 
@@ -318,10 +330,12 @@ class CookingAssistant:
             return state
 
         try:
-            # 템플릿 기반 프롬프트 생성
-            state["image_prompt"] = self.image_service.generate_image_prompt(
-                state["dish_name"]
-            )
+            # 첫 번째 요리명으로 이미지 생성
+            dish_names = state.get("dish_names", [])
+            if dish_names:
+                state["image_prompt"] = self.image_service.generate_image_prompt(
+                    dish_names[0]
+                )
         except Exception as e:
             state["error"] = f"이미지 프롬프트 생성 실패: {str(e)}"
 
@@ -439,7 +453,13 @@ JSON 형식으로 반환:
             logger.info(f"[파싱 완료] 추천 타입: {type(recommendation_data).__name__}, 키: {list(recommendation_data.keys())}")
 
             state["recommendation"] = result_json
-            logger.info(f"[음식 추천 완료]")
+
+            # 추천받은 요리명을 dish_names에 저장
+            recommendations = recommendation_data.get("recommendations", [])
+            dish_names = [rec.get("name", "") for rec in recommendations if rec.get("name")]
+            state["dish_names"] = dish_names
+
+            logger.info(f"[음식 추천 완료] dish_names에 저장: {dish_names}")
 
         except Exception as e:
             logger.error(f"음식 추천 실패: {str(e)}")
@@ -638,7 +658,7 @@ JSON 형식으로 반환:
             "confidence": 0.0,
             "recipe_text": "",
             "recipes": [],
-            "dish_name": "",
+            "dish_names": [],
             "recommendation": "",
             "answer": "",
             "image_prompt": "",
