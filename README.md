@@ -5,7 +5,7 @@
 [![Claude](https://img.shields.io/badge/Claude-Sonnet%204.5-orange.svg)](https://anthropic.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-자연어 이해를 통해 레시피 생성, 음식 추천, 요리 질문 답변을 제공하는 차세대 한국어 요리 AI 서비스입니다.
+~자연어 이해를 통해 레시피 생성, 음식 추천, 요리 질문 답변을 제공하는 차세대 한국어 요리 AI 서비스입니다.~
 
 ## ✨ 핵심 가치
 
