@@ -33,10 +33,19 @@ class PromptLoader:
         """초기화 및 YAML 파일 로드
 
         Args:
-            prompts_dir: 프롬프트 YAML 파일이 위치한 디렉토리
+            prompts_dir: 프롬프트 YAML 파일이 위치한 디렉토리 (상대 경로 또는 절대 경로)
         """
-        self.prompts_dir = Path(prompts_dir)
+        # 상대 경로를 절대 경로로 변환 (uvicorn reload 모드 대응)
+        prompts_path = Path(prompts_dir)
+        if not prompts_path.is_absolute():
+            # 프로젝트 루트 기준으로 변환 (app/core의 2단계 상위)
+            project_root = Path(__file__).parent.parent.parent
+            prompts_path = project_root / prompts_dir
+
+        self.prompts_dir = prompts_path
         self.prompts: Dict[str, Dict[str, Any]] = {}
+
+        logger.debug(f"[PromptLoader] prompts_dir 초기화: {self.prompts_dir}")
 
         # Jinja2 환경 설정 (autoescape=False: 프롬프트는 HTML이 아님)
         self.jinja_env = Environment(
