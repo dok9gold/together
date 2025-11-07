@@ -1,14 +1,17 @@
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models.schemas import CookingRequest, CookingResponse
-from app.services.cooking_assistant import CookingAssistant
+from app.api.dependencies import get_create_recipe_use_case
+from app.application.use_cases.create_recipe_use_case import CreateRecipeUseCase
 
 router = APIRouter()
-cooking_assistant = CookingAssistant()
 
 
 @router.post("/cooking", response_model=CookingResponse)
-async def handle_cooking_query(request: CookingRequest):
+async def handle_cooking_query(
+    request: CookingRequest,
+    use_case: CreateRecipeUseCase = Depends(get_create_recipe_use_case)
+):
     """
     요리 AI 어시스턴트 API
 
@@ -23,8 +26,8 @@ async def handle_cooking_query(request: CookingRequest):
         - 예: "김치찌개 칼로리는?" (질문 답변)
     """
     try:
-        # 요리 AI 어시스턴트 워크플로우 실행
-        result = await cooking_assistant.run(request.query)
+        # 요리 AI 어시스턴트 워크플로우 실행 (DI Container에서 주입받은 Use Case)
+        result = await use_case.execute(request.query)
 
         # 에러 처리
         if result.get("error"):

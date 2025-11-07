@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 
 # 환경 변수 로드 (다른 import 전에 먼저 실행)
@@ -7,18 +8,28 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
+from app.core.config import get_settings
 
-# FastAPI 앱 생성
-app = FastAPI(
-    title="Cooking Assistant API",
-    description="Claude와 LangGraph를 활용한 요리 AI 어시스턴트 서비스 - 레시피 생성, 음식 추천, 요리 질문 답변",
-    version="1.0.0"
+# 로깅 설정
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# CORS 설정 (프론트엔드 연동)
+# 설정 로드
+settings = get_settings()
+
+# FastAPI 앱 생성 (설정 기반)
+app = FastAPI(
+    title=settings.app_title,
+    description=settings.app_description,
+    version=settings.app_version
+)
+
+# CORS 설정 (설정 기반)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 프로덕션에서는 특정 도메인만 허용하도록 수정
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
