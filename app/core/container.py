@@ -5,6 +5,7 @@ Spring의 ApplicationContext와 유사한 역할을 합니다.
 """
 from dependency_injector import containers, providers
 from app.core.config import get_settings
+from app.core.prompt_loader import PromptLoader
 
 # Domain
 from app.domain.services.cooking_assistant import CookingAssistantService
@@ -43,11 +44,20 @@ class Container(containers.DeclarativeContainer):
     config = providers.Singleton(get_settings)
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # Prompt Loader (Singleton) - YAML 프롬프트 관리
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    prompt_loader = providers.Singleton(
+        PromptLoader,
+        prompts_dir="app/prompts"
+    )
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # Adapters (Singleton) - Port 구현체
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     llm_adapter = providers.Singleton(
         AnthropicLLMAdapter,
-        settings=config
+        settings=config,
+        prompt_loader=prompt_loader
     )
 
     image_adapter = providers.Singleton(
