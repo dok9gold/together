@@ -41,3 +41,40 @@ class CookingState(TypedDict):
     image_url: Optional[str]
     image_urls: List[str]
     error: Optional[str]
+
+
+def create_initial_state(query: str) -> CookingState:
+    """초기 상태 생성 (Factory 함수)
+
+    워크플로우 실행 전 초기 상태를 생성합니다.
+    모든 필드를 기본값으로 초기화하고 user_query만 설정합니다.
+
+    Args:
+        query: 사용자 입력 쿼리
+
+    Returns:
+        CookingState: 초기화된 워크플로우 상태
+
+    Example:
+        >>> state = create_initial_state("김치찌개 만드는 법")
+        >>> state["user_query"]
+        '김치찌개 만드는 법'
+        >>> state["primary_intent"]
+        ''
+    """
+    return {
+        "user_query": query,
+        "primary_intent": "",
+        "secondary_intents": [],
+        "entities": {},
+        "confidence": 0.0,
+        "recipe_text": "",
+        "recipes": [],
+        "dish_names": [],
+        "recommendation": "",
+        "answer": "",
+        "image_prompt": "",
+        "image_url": None,
+        "image_urls": [],
+        "error": None
+    }
