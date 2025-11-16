@@ -2,7 +2,7 @@
 
 LangGraph 워크플로우에서 사용하는 상태 타입입니다.
 """
-from typing import TypedDict, Optional, List, Dict, Any
+from typing import TypedDict, Optional, List, Dict, Any, Union
 
 
 class CookingState(TypedDict):
@@ -13,6 +13,7 @@ class CookingState(TypedDict):
 
     Attributes:
         user_query: 사용자 입력 쿼리
+        user_id: 사용자 ID (인증된 경우, 개인화 기능용)
         primary_intent: 주 의도 (recipe_create, recommend, question)
         secondary_intents: 부가 의도 리스트 (순차 실행)
         entities: 추출된 엔티티 (요리명, 재료, 제약조건 등)
@@ -28,6 +29,7 @@ class CookingState(TypedDict):
         error: 오류 메시지
     """
     user_query: str
+    user_id: Optional[str]
     primary_intent: str
     secondary_intents: List[str]
     entities: Dict[str, Any]
@@ -64,6 +66,7 @@ def create_initial_state(query: str) -> CookingState:
     """
     return {
         "user_query": query,
+        "user_id": None,
         "primary_intent": "",
         "secondary_intents": [],
         "entities": {},

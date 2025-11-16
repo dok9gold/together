@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     replicate_api_token: str
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    # 인증 (JWT)
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    secret_key: str
+
+    # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # LLM 설정 (Anthropic Claude)
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     llm_model: str = "claude-sonnet-4-5-20250929"

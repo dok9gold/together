@@ -45,7 +45,11 @@ class CreateRecipeUseCase:
         """
         self.workflow = workflow
 
-    async def execute(self, query: str) -> CookingResponse:
+    async def execute(
+        self,
+        query: str,
+        user_id: Optional[str] = None
+    ) -> CookingResponse:
         """레시피 생성 워크플로우 실행 및 DTO 변환
 
         전체 워크플로우:
@@ -58,15 +62,21 @@ class CreateRecipeUseCase:
         Args:
             query: 사용자 쿼리
                 예: "파스타 카르보나라 만드는 법"
+            user_id: 사용자 ID (선택적, 인증된 경우 전달됨)
+                - 향후 개인화 기능에 활용 가능
+                - 사용자 선호도, 히스토리 조회 등
 
         Returns:
             CookingResponse: 의도별 응답 DTO (RecipeResponse, RecommendationResponse, QuestionResponse, ErrorResponse)
         """
-        logger.info(f"[UseCase] 실행 시작: {query[:50]}...")
+        logger.info(f"[UseCase] 실행 시작 - user_id: {user_id}, query: {query[:50]}...")
 
         try:
             # 1. 초기 상태 생성 (Factory 사용)
             initial_state = create_initial_state(query)
+
+            # 2. user_id를 state에 추가 (향후 개인화 기능에서 활용)
+            initial_state["user_id"] = user_id
 
             # 2. 워크플로우 실행
             result: CookingState = await self.workflow.run(initial_state)

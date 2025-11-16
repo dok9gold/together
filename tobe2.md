@@ -1036,15 +1036,15 @@ use_case.py (252줄)
 - [x] 시스템 코드 중앙 관리 (`app/core/response_codes.py`)
 - [x] 계층별 책임 명확화 문서
 
-### 다음 단계 (인증) 🔜
+### 다음 단계 (인증) ✅ 완료!
 
-- [ ] `app/core/auth.py` 파일 생성
-- [ ] `SECRET_KEY` 환경 변수 추가
-- [ ] `python-jose`, `passlib` 설치
-- [ ] `get_current_user()` Dependency 구현
-- [ ] routes.py에 `Depends(get_current_user)` 추가
-- [ ] UseCase에 `user_id` 파라미터 추가
-- [ ] 인증 테스트
+- [x] `app/core/auth.py` 파일 생성
+- [x] `SECRET_KEY` 환경 변수 추가
+- [x] `python-jose`, `passlib` 설치
+- [x] `get_current_user()` Dependency 구현
+- [x] routes.py에 `Depends(get_optional_user)` 추가
+- [x] UseCase에 `user_id` 파라미터 추가
+- [ ] 인증 테스트 (수동 테스트 필요)
 
 ### 향후 확장 (RAG + 메모리) 🚀
 
