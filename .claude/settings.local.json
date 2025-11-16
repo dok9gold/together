@@ -3,7 +3,9 @@
     "allow": [
       "Bash(python -m py_compile:*)",
       "Bash(python -c:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -m pytest:*)"
     ],
     "deny": [],
     "ask": []

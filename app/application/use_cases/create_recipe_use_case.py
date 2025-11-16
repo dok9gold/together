@@ -17,9 +17,17 @@ from app.models.schemas import (
     Recommendation
 )
 from app.core.response_codes import ResponseCode
+from app.domain.exceptions import (
+    DomainException,
+    LLMServiceError,
+    ImageGenerationError,
+    WorkflowError,
+    ParsingError,
+    ValidationError
+)
 import logging
 import json
-from typing import Union
+from typing import Union, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +98,58 @@ class CreateRecipeUseCase:
 
             return response
 
+        except ImageGenerationError as e:
+            # 이미지 생성 실패는 레시피는 반환 (우아한 성능 저하)
+            logger.warning(f"[UseCase] 이미지 생성 실패: {e}")
+
+            # 이미지 없이 레시피 응답 생성
+            response = self._to_dto(result)
+
+            # 에러 메시지 추가
+            if isinstance(response, RecipeResponse):
+                response.message = f"레시피는 생성되었으나 이미지 생성에 실패했습니다: {e.message}"
+
+            return response
+
+        except LLMServiceError as e:
+            # LLM 서비스 오류 (치명적)
+            logger.error(f"[UseCase] LLM 서비스 오류: {e}", exc_info=True)
+            return ErrorResponse(
+                code=e.code or ResponseCode.INTERNAL_ERROR,
+                message=f"AI 서비스 오류: {e.message}",
+                data=e.details if e.details else None
+            )
+
+        except (ParsingError, ValidationError) as e:
+            # 데이터 파싱/검증 실패
+            logger.error(f"[UseCase] 데이터 처리 오류: {e}", exc_info=True)
+            return ErrorResponse(
+                code=e.code or ResponseCode.INTERNAL_ERROR,
+                message=f"데이터 처리 오류: {e.message}",
+                data=e.details if e.details else None
+            )
+
+        except WorkflowError as e:
+            # 워크플로우 실행 오류
+            logger.error(f"[UseCase] 워크플로우 오류: {e}", exc_info=True)
+            return ErrorResponse(
+                code=e.code or ResponseCode.INTERNAL_ERROR,
+                message=f"워크플로우 실행 오류: {e.message}",
+                data=e.details if e.details else None
+            )
+
+        except DomainException as e:
+            # 기타 도메인 예외
+            logger.error(f"[UseCase] 도메인 오류: {e}", exc_info=True)
+            return ErrorResponse(
+                code=e.code or ResponseCode.INTERNAL_ERROR,
+                message=e.message,
+                data=e.details if e.details else None
+            )
+
         except Exception as e:
-            logger.error(f"[UseCase] 실행 오류: {e}", exc_info=True)
+            # 예상치 못한 오류
+            logger.error(f"[UseCase] 예상치 못한 오류: {e}", exc_info=True)
             return ErrorResponse(
                 code=ResponseCode.INTERNAL_ERROR,
                 message=f"서버 오류: {str(e)}"

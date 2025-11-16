@@ -4,6 +4,7 @@
 """
 from dataclasses import dataclass
 from typing import List
+from app.domain.exceptions import RecipeValidationError
 
 
 @dataclass
@@ -36,30 +37,50 @@ class Recipe:
     cooking_time: str
     difficulty: str
 
-    def validate(self) -> bool:
+    def validate(self) -> None:
         """레시피 유효성 검증 (비즈니스 규칙)
 
-        Returns:
-            bool: 유효하면 True, 아니면 False
+        Raises:
+            RecipeValidationError: 검증 실패 시
+
+        Example:
+            >>> recipe = Recipe(...)
+            >>> recipe.validate()  # 성공 시 아무 일도 없음
+            >>> invalid_recipe = Recipe(title="", ...)
+            >>> invalid_recipe.validate()  # RecipeValidationError 발생
         """
         # 제목 검증
         if not self.title or len(self.title) < 2:
-            return False
+            raise RecipeValidationError(
+                "레시피 제목은 2글자 이상이어야 합니다",
+                code="INVALID_TITLE",
+                details={"title": self.title, "min_length": 2}
+            )
 
         # 재료 검증
         if not self.ingredients or len(self.ingredients) < 1:
-            return False
+            raise RecipeValidationError(
+                "레시피에는 최소 1개 이상의 재료가 필요합니다",
+                code="EMPTY_INGREDIENTS",
+                details={"ingredients_count": len(self.ingredients) if self.ingredients else 0}
+            )
 
         # 조리 단계 검증
         if not self.steps or len(self.steps) < 1:
-            return False
+            raise RecipeValidationError(
+                "레시피에는 최소 1개 이상의 조리 단계가 필요합니다",
+                code="EMPTY_STEPS",
+                details={"steps_count": len(self.steps) if self.steps else 0}
+            )
 
         # 난이도 검증
         valid_difficulties = ["쉬움", "중간", "어려움"]
         if self.difficulty not in valid_difficulties:
-            return False
-
-        return True
+            raise RecipeValidationError(
+                f"난이도는 {', '.join(valid_difficulties)} 중 하나여야 합니다",
+                code="INVALID_DIFFICULTY",
+                details={"difficulty": self.difficulty, "valid_options": valid_difficulties}
+            )
 
     def get_total_steps(self) -> int:
         """조리 단계 개수 반환

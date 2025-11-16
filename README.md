@@ -290,6 +290,37 @@ python3 scripts/generate_token.py user456 --hours 48
 
 ## 🛠️ 개발
 
+### 테스트 실행
+
+```bash
+# 전체 테스트 실행
+pytest
+
+# 특정 테스트만 실행
+pytest tests/unit/test_recipe.py
+
+# 커버리지 포함
+pytest --cov=app --cov-report=html
+
+# 마커별 실행
+pytest -m unit          # 단위 테스트만
+pytest -m integration   # 통합 테스트만
+pytest -m e2e          # E2E 테스트만
+```
+
+**테스트 구조**:
+```
+tests/
+├── unit/              # 단위 테스트 (Mock 사용)
+│   ├── test_recipe.py                  # Recipe Entity (18개)
+│   ├── test_anthropic_adapter.py       # LLM Adapter Mock
+│   └── test_replicate_adapter.py       # Image Adapter Mock
+├── integration/       # 통합 테스트
+│   └── test_workflow.py                # Workflow 통합
+└── e2e/              # E2E 테스트
+    └── test_api.py                     # API 엔드포인트
+```
+
 ### 설계 원칙
 
 1. **UseCase = Spring의 Service**
@@ -303,6 +334,11 @@ python3 scripts/generate_token.py user456 --hours 48
 3. **Workflow = 오케스트레이션**
    - 노드 실행 순서만 정의
    - 비즈니스 로직은 Domain Services로 위임
+
+4. **에러 핸들링 체계화**
+   - 도메인 예외 정의 (`app/domain/exceptions.py`)
+   - 계층별 예외 처리 (UseCase에서 변환)
+   - 우아한 성능 저하 (이미지 실패해도 레시피 반환)
 
 ### 프롬프트 관리
 
