@@ -1,13 +1,16 @@
-"""FastAPI Dependencies - Injector 연동
+"""FastAPI Dependencies - Injector 및 인증 관리
 
 FastAPI의 Depends에서 사용할 의존성 주입 헬퍼 함수들입니다.
+
+Note:
+    UseCase 의존성은 app.core.decorators.get_dependency()를 사용하세요.
+    이 파일은 Injector 싱글톤 및 인증 관련 의존성만 관리합니다.
 """
-from typing import Generator, Optional
+from typing import Optional
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from injector import Injector
 from app.core.module import CookingModule
-from app.application.use_cases.create_recipe_use_case import CreateRecipeUseCase
 from app.core.auth import AuthService
 from app.core.config import get_settings
 
@@ -32,16 +35,6 @@ def get_injector() -> Injector:
     if _injector is None:
         _injector = Injector([CookingModule()])
     return _injector
-
-
-def get_create_recipe_use_case() -> Generator[CreateRecipeUseCase, None, None]:
-    """레시피 생성 유스케이스 반환 (FastAPI Depends용)
-
-    Yields:
-        CreateRecipeUseCase: 레시피 생성 유스케이스 인스턴스
-    """
-    injector = get_injector()
-    yield injector.get(CreateRecipeUseCase)
 
 
 def get_auth_service() -> AuthService:

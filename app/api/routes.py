@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from typing import Optional
 from app.models.schemas import CookingRequest, CookingResponse
-from app.api.dependencies import get_create_recipe_use_case, get_optional_user
+from app.api.dependencies import get_optional_user
 from app.application.use_cases.create_recipe_use_case import CreateRecipeUseCase
+from app.core.decorators import get_dependency
 
 router = APIRouter()
 
@@ -11,7 +12,7 @@ router = APIRouter()
 async def handle_cooking_query(
     request: CookingRequest,
     user_id: Optional[str] = Depends(get_optional_user),
-    use_case: CreateRecipeUseCase = Depends(get_create_recipe_use_case)
+    use_case: CreateRecipeUseCase = Depends(get_dependency(CreateRecipeUseCase))
 ):
     """
     요리 AI 어시스턴트 API
