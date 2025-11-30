@@ -2,6 +2,7 @@
 
 IImagePort 인터페이스를 Replicate API에 맞게 구현합니다.
 """
+from app.core.decorators import singleton, inject
 from app.domain.ports.image_port import IImagePort
 from app.core.config import Settings
 import replicate
@@ -11,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@singleton
 class ReplicateImageAdapter(IImagePort):
     """Replicate 어댑터 (IImagePort 구현체)
 
@@ -23,8 +25,11 @@ class ReplicateImageAdapter(IImagePort):
         api_token: Replicate API 토큰
     """
 
+    @inject
     def __init__(self, settings: Settings):
         """의존성 주입: Settings
+
+        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
 
         Args:
             settings: 애플리케이션 설정 (Config)

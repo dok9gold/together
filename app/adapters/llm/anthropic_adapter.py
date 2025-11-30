@@ -2,6 +2,7 @@
 
 ILLMPort 인터페이스를 Anthropic API에 맞게 구현합니다.
 """
+from app.core.decorators import singleton, inject
 from app.domain.ports.llm_port import ILLMPort
 from app.core.config import Settings
 from app.core.prompt_loader import PromptLoader
@@ -14,6 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@singleton
 class AnthropicLLMAdapter(ILLMPort):
     """Anthropic Claude 어댑터 (ILLMPort 구현체)
 
@@ -28,8 +30,11 @@ class AnthropicLLMAdapter(ILLMPort):
         llm: LangChain ChatAnthropic 인스턴스
     """
 
+    @inject
     def __init__(self, settings: Settings, prompt_loader: PromptLoader):
         """의존성 주입: Settings, PromptLoader
+
+        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
 
         Args:
             settings: 애플리케이션 설정 (Config)

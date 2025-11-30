@@ -8,7 +8,7 @@ langchain-anthropic==1.0.0
 replicate==1.0.7
 pydantic==2.12.3
 pydantic-settings==2.1.0
-dependency-injector==4.42.0
+injector==0.21.0
 httpx==0.28.1
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4

@@ -2,6 +2,7 @@
 
 Domain Service를 호출하는 얇은 래퍼입니다.
 """
+from app.core.decorators import inject
 from app.domain.services.cooking_assistant import CookingAssistantService
 from app.domain.entities.cooking_state import CookingState
 import logging
@@ -16,6 +17,7 @@ class RecommenderNode:
         cooking_assistant: 도메인 서비스
     """
 
+    @inject
     def __init__(self, cooking_assistant: CookingAssistantService):
         """의존성 주입: Domain Service
 

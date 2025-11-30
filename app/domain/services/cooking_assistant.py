@@ -3,6 +3,7 @@
 핵심 비즈니스 로직을 담당합니다.
 외부 시스템은 몰라도 되며, Port 인터페이스에만 의존합니다.
 """
+from app.core.decorators import singleton, inject
 from app.domain.ports.llm_port import ILLMPort
 from app.domain.ports.image_port import IImagePort
 from app.domain.entities.cooking_state import CookingState
@@ -11,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@singleton
 class CookingAssistantService:
     """요리 AI 어시스턴트 도메인 서비스
 
@@ -30,8 +32,11 @@ class CookingAssistantService:
         >>> state = await service.classify_intent(initial_state)
     """
 
+    @inject
     def __init__(self, llm_port: ILLMPort, image_port: IImagePort):
         """의존성 주입: Port 인터페이스를 받음
+
+        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
 
         Args:
             llm_port: LLM 포트 (Anthropic든 OpenAI든 상관없음)

@@ -2,6 +2,7 @@
 
 LangGraph StateGraph를 구성하여 워크플로우를 정의합니다.
 """
+from app.core.decorators import singleton, inject
 from langgraph.graph import StateGraph, END
 from app.domain.entities.cooking_state import CookingState
 from app.application.workflow.nodes.intent_classifier_node import IntentClassifierNode
@@ -15,6 +16,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+@singleton
 class CookingWorkflow:
     """요리 AI 어시스턴트 워크플로우 (LangGraph)
 
@@ -35,6 +37,7 @@ class CookingWorkflow:
         graph: 컴파일된 LangGraph StateGraph
     """
 
+    @inject
     def __init__(
         self,
         intent_classifier: IntentClassifierNode,
@@ -44,6 +47,8 @@ class CookingWorkflow:
         question_answerer: QuestionAnswererNode
     ):
         """의존성 주입: 모든 노드
+
+        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
 
         Args:
             intent_classifier: 의도 분류 노드

@@ -1,11 +1,12 @@
-"""FastAPI Dependencies - DI Container 연동
+"""FastAPI Dependencies - Injector 연동
 
 FastAPI의 Depends에서 사용할 의존성 주입 헬퍼 함수들입니다.
 """
 from typing import Generator, Optional
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.core.container import Container
+from injector import Injector
+from app.core.module import CookingModule
 from app.application.use_cases.create_recipe_use_case import CreateRecipeUseCase
 from app.core.auth import AuthService
 from app.core.config import get_settings
@@ -14,23 +15,23 @@ from app.core.config import get_settings
 security = HTTPBearer()
 security_optional = HTTPBearer(auto_error=False)
 
-# 글로벌 컨테이너 (싱글톤)
-_container: Container = None
+# 글로벌 Injector (싱글톤)
+_injector: Optional[Injector] = None
 
 # 글로벌 AuthService (싱글톤)
 _auth_service: Optional[AuthService] = None
 
 
-def get_container() -> Container:
-    """컨테이너 싱글톤 반환
+def get_injector() -> Injector:
+    """Injector 싱글톤 반환
 
     Returns:
-        Container: DI 컨테이너 인스턴스
+        Injector: DI Injector 인스턴스
     """
-    global _container
-    if _container is None:
-        _container = Container()
-    return _container
+    global _injector
+    if _injector is None:
+        _injector = Injector([CookingModule()])
+    return _injector
 
 
 def get_create_recipe_use_case() -> Generator[CreateRecipeUseCase, None, None]:
@@ -39,8 +40,8 @@ def get_create_recipe_use_case() -> Generator[CreateRecipeUseCase, None, None]:
     Yields:
         CreateRecipeUseCase: 레시피 생성 유스케이스 인스턴스
     """
-    container = get_container()
-    yield container.create_recipe_use_case()
+    injector = get_injector()
+    yield injector.get(CreateRecipeUseCase)
 
 
 def get_auth_service() -> AuthService:

@@ -2,6 +2,7 @@
 
 워크플로우를 실행하여 레시피를 생성합니다.
 """
+from app.core.decorators import inject
 from app.application.workflow.cooking_workflow import CookingWorkflow
 from app.domain.entities.cooking_state import CookingState, create_initial_state
 from app.models.schemas import (
@@ -16,7 +17,7 @@ from app.models.schemas import (
     ResponseMetadata,
     Recommendation
 )
-from app.core.response_codes import ResponseCode
+from app.domain.response_codes import ResponseCode
 from app.domain.exceptions import (
     DomainException,
     LLMServiceError,
@@ -45,8 +46,11 @@ class CreateRecipeUseCase:
         workflow: LangGraph 워크플로우
     """
 
+    @inject
     def __init__(self, workflow: CookingWorkflow):
         """의존성 주입: 워크플로우
+
+        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
 
         Args:
             workflow: 요리 AI 어시스턴트 워크플로우
