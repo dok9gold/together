@@ -289,13 +289,6 @@ pytest --cov=app --cov-report=html
 
 ---
 
-## 문서
-
-- CLAUDE.md - Claude Code 가이드
-- docs/FRAMEWORK.md - Piri Framework 전체 가이드
-
----
-
 ## 라이선스
 
 MIT License
