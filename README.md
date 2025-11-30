@@ -36,10 +36,16 @@ cp .env.example .env
 ### 실행
 
 ```bash
-python -m app.main
+# 가상환경 활성화
+source venv/bin/activate
+
+# 서버 실행 (핫 리로드 포함)
+uvicorn app.main:app --reload
 ```
 
 http://localhost:8000 에서 접속 가능
+
+종료: Ctrl+C
 
 ---
 
