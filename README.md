@@ -4,6 +4,8 @@ FastAPI + LangGraph 기반 AI Agent 애플리케이션을 빠르게 구축하는
 
 Hexagonal Architecture, DDD, 데코레이터 기반 의존성 주입, 프롬프트 관리를 기본 제공합니다.
 
+**이 레포지토리는 Piri Framework의 첫 번째 템플릿인 `cooking-assistant` 예제를 포함합니다.**
+
 ---
 
 ## 핵심 특징
@@ -28,6 +30,8 @@ Hexagonal Architecture, DDD, 데코레이터 기반 의존성 주입, 프롬프�
 ```bash
 git clone https://github.com/your-username/born.git
 cd born
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 # .env 파일 편집하여 API 키 추가
@@ -222,17 +226,21 @@ class AnthropicLLMAdapter(ILLMPort):
 
 ---
 
-## API 문서
+## 테스트
 
-서버 실행 후 브라우저에서 확인:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+```bash
+# 전체 테스트
+pytest
+
+# 커버리지 포함
+pytest --cov=app --cov-report=html
+```
 
 ---
 
-## Cooking Assistant 템플릿
+## 예제: Cooking Assistant 템플릿
 
-Piri Framework의 첫 번째 템플릿인 한국어 요리 AI 어시스턴트
+이 레포지토리는 Piri Framework의 첫 번째 템플릿인 **한국어 요리 AI 어시스턴트** 예제를 포함합니다.
 
 ### 기능
 - 레시피 생성 - 조리법과 이미지 자동 생성
@@ -240,7 +248,13 @@ Piri Framework의 첫 번째 템플릿인 한국어 요리 AI 어시스턴트
 - 요리 Q&A - 요리 관련 질문 답변
 - 한국어 네이티브 지원
 
-### API 사용
+### API 문서
+
+서버 실행 후 브라우저에서 확인:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+### API 사용 예제
 
 레시피 생성:
 ```bash
@@ -274,18 +288,6 @@ curl -X POST http://localhost:8000/api/cooking \
 - rag-qa - RAG 기반 문서 Q&A
 - multimodal - 멀티모달 AI
 - conversational - 대화 히스토리 관리
-
----
-
-## 테스트
-
-```bash
-# 전체 테스트
-pytest
-
-# 커버리지 포함
-pytest --cov=app --cov-report=html
-```
 
 ---
 
