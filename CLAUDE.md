@@ -113,6 +113,29 @@ class CookingModule(Module):
 
 ---
 
+## Git Workflow
+
+이 프로젝트는 2개의 리모트 레포지토리를 사용합니다:
+- **origin**: https://github.com/dok9gold/born.git (개발용)
+- **together**: https://github.com/dok9gold/together.git (관리용 - main 브랜치만 사용)
+
+### 푸시 방법
+```bash
+# 양쪽 모두 푸시 (권장)
+git push origin simple1 && git push together simple1:main
+
+# 개별 푸시
+git push origin simple1          # born 레포에 simple1 브랜치로 푸시
+git push together simple1:main   # together 레포에 main 브랜치로 푸시
+```
+
+### VS Code에서 관리
+- VS Code는 현재 폴더(`/Users/dok9/programing/born`)만 표시
+- Source Control UI에서 remote 선택하여 푸시 가능
+- 터미널에서 위 명령어로 양쪽 푸시 가능
+
+---
+
 ## 참고 문서
 
 - **Piri Framework 전체 가이드**: `docs/FRAMEWORK.md`
