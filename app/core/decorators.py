@@ -30,7 +30,7 @@ def get_dependency(use_case_class: Type) -> Callable:
     """
     def dependency() -> Generator:
         # 순환 참조 방지를 위해 여기서 import
-        from app.api.dependencies import get_injector
+        from app.core.dependencies import get_injector
         injector = get_injector()
         yield injector.get(use_case_class)
 

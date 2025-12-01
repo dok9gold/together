@@ -30,7 +30,7 @@ Hexagonal Architecture, DDD, 데코레이터 기반 의존성 주입, 프롬프�
 ```bash
 git clone https://github.com/your-username/born.git
 cd born
-python3 -m venv venv
+python3 -m venv .venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env

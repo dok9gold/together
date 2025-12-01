@@ -7,7 +7,7 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router
+from app.cooking_assistant.api.routes import router
 from app.core.config import get_settings
 
 # 로깅 설정

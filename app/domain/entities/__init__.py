@@ -1,1 +1,0 @@
-"""Domain Entities - 비즈니스 객체"""
