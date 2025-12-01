@@ -48,8 +48,8 @@ class Settings(BaseSettings):
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # 애플리케이션 설정
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    app_title: str = "Cooking Assistant API"
-    app_description: str = "Claude와 LangGraph를 활용한 요리 AI 어시스턴트 서비스"
+    app_title: str = "AI Assistant API"
+    app_description: str = "LLM 기반 AI 어시스턴트 서비스"
     app_version: str = "2.0.0"
     cors_origins: List[str] = ["*"]
 

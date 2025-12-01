@@ -1,7 +1,10 @@
 """AnthropicLLMAdapter - Anthropic Claude LLM 어댑터
 
-ILLMPort 인터페이스를 Anthropic API에 맞게 구현합니다.
-Pure adapter: prompt → API → result (no business logic)
+ILLMPort 인터페이스를 Anthropic Claude API에 맞게 구현합니다.
+
+Pure Adapter 원칙:
+- 프롬프트를 받아 API 호출 후 결과 반환
+- 비즈니스 로직 없음 (프롬프트 생성, 엔티티 추출 등은 호출자가 담당)
 """
 from app.core.decorators import singleton, inject
 from app.core.ports.llm_port import ILLMPort
@@ -19,11 +22,14 @@ logger = logging.getLogger(__name__)
 class AnthropicLLMAdapter(ILLMPort):
     """Anthropic Claude 어댑터 (ILLMPort 구현체)
 
-    Pure adapter pattern:
-    - Receives pre-rendered prompts from workflow nodes
-    - Calls Anthropic API
-    - Returns raw LLM response
-    - NO business logic (no prompt selection, no entity extraction)
+    Port-Adapter Pattern 구현:
+    - Port(ILLMPort)가 정의한 인터페이스를 Anthropic Claude API에 맞춰 구현
+    - 다른 LLM 제공자(OpenAI, Google Gemini 등)로 교체 가능
+
+    Pure Adapter 원칙:
+    - 렌더링된 프롬프트를 받아서 API 호출
+    - 비즈니스 로직 없음 (프롬프트 선택, 엔티티 추출 등은 호출자가 담당)
+    - 단순히 API 호출 및 결과 반환만 담당
 
     Attributes:
         settings: 애플리케이션 설정
@@ -32,10 +38,10 @@ class AnthropicLLMAdapter(ILLMPort):
 
     @inject
     def __init__(self, settings: Settings):
-        """의존성 주입: Settings only (PromptLoader removed)
+        """의존성 주입: Settings
 
         Args:
-            settings: 애플리케이션 설정 (Config)
+            settings: 애플리케이션 설정 (LLM 모델명, API 키, 타임아웃 등)
         """
         self.settings = settings
         self.llm = ChatAnthropic(

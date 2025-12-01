@@ -1,7 +1,10 @@
 """ReplicateImageAdapter - Replicate 이미지 생성 어댑터
 
 IImagePort 인터페이스를 Replicate API에 맞게 구현합니다.
-Pure adapter: prompt → API → image URL (no template logic)
+
+Pure Adapter 원칙:
+- 프롬프트를 받아 API 호출 후 이미지 URL 반환
+- 비즈니스 로직 없음 (프롬프트 템플릿은 호출자가 담당)
 """
 from app.core.decorators import singleton, inject
 from app.core.ports.image_port import IImagePort
@@ -17,11 +20,14 @@ logger = logging.getLogger(__name__)
 class ReplicateImageAdapter(IImagePort):
     """Replicate 어댑터 (IImagePort 구현체)
 
-    Pure adapter pattern:
-    - Receives pre-rendered prompts from workflow nodes
-    - Calls Replicate API
-    - Returns image URL
-    - NO business logic (no prompt templates)
+    Port-Adapter Pattern 구현:
+    - Port(IImagePort)가 정의한 인터페이스를 Replicate API에 맞춰 구현
+    - 다른 이미지 서비스(DALL-E, Midjourney 등)로 교체 가능
+
+    Pure Adapter 원칙:
+    - 렌더링된 프롬프트를 받아서 API 호출
+    - 비즈니스 로직 없음 (프롬프트 템플릿은 호출자가 담당)
+    - 단순히 API 호출 및 이미지 URL 반환만 담당
 
     Attributes:
         settings: 애플리케이션 설정
@@ -32,10 +38,8 @@ class ReplicateImageAdapter(IImagePort):
     def __init__(self, settings: Settings):
         """의존성 주입: Settings
 
-        타입 힌트를 통해 자동으로 의존성이 주입됩니다.
-
         Args:
-            settings: 애플리케이션 설정 (Config)
+            settings: 애플리케이션 설정 (이미지 모델명, API 토큰, 재시도 횟수 등)
         """
         self.settings = settings
         self.api_token = settings.replicate_api_token

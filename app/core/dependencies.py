@@ -3,8 +3,9 @@
 FastAPI의 Depends에서 사용할 의존성 주입 헬퍼 함수들입니다.
 
 Note:
-    UseCase 의존성은 app.core.decorators.get_dependency()를 사용하세요.
-    이 파일은 Injector 싱글톤 및 인증 관련 의존성만 관리합니다.
+    - Application 모듈을 등록하여 DI 컨테이너를 초기화합니다
+    - UseCase 의존성은 app.core.decorators.get_dependency()를 사용하세요
+    - 이 파일은 Injector 싱글톤 및 인증 관련 의존성만 관리합니다
 """
 from typing import Optional
 from fastapi import Depends
