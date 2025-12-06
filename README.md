@@ -28,8 +28,8 @@ Hexagonal Architecture, Port-Adapter Pattern, 데코레이터 기반 의존성 �
 ### 설치
 
 ```bash
-git clone https://github.com/your-username/ai-assistant-framework.git
-cd ai-assistant-framework
+git clone https://github.com/dok9gold/together.git
+cd together
 python3 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -44,6 +44,9 @@ cp .env.example .env
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
 # 서버 실행 (핫 리로드 포함)
+python -m app.main
+
+# 또는 uvicorn 직접 사용
 uvicorn app.main:app --reload
 ```
 
@@ -128,52 +131,52 @@ class CookingModule(Module):
 
 ```
 app/
-├── core/                            # 🔧 프레임워크 Core (재사용 가능)
-│   ├── config.py                   # 설정 관리 (범용)
-│   ├── auth.py                     # JWT 인증 (범용)
-│   ├── prompt_loader.py            # 프롬프트 시스템 (범용)
-│   ├── decorators.py               # DI 데코레이터 (범용)
-│   ├── dependencies.py             # FastAPI Dependencies (범용)
-│   ├── ports/                      # Port 인터페이스
-│   │   ├── llm_port.py            # ILLMPort (범용 인터페이스)
-│   │   └── image_port.py          # IImagePort (범용 인터페이스)
-│   └── adapters/                   # Adapter 구현체
+├── core/                            # 🔧 Framework Core (재사용 가능)
+│   ├── config.py                   # 설정 관리
+│   ├── auth.py                     # JWT 인증
+│   ├── prompt_loader.py            # 프롬프트 시스템
+│   ├── decorators.py               # DI 데코레이터
+│   ├── dependencies.py             # FastAPI Dependencies
+│   ├── ports/                      # Port 인터페이스 (범용)
+│   │   ├── llm_port.py
+│   │   └── image_port.py
+│   └── adapters/                   # Adapter 구현체 (범용)
 │       ├── llm/
 │       │   └── anthropic_adapter.py
 │       └── image/
 │           └── replicate_adapter.py
 │
-├── cooking_assistant/               # 📦 Application Template (도메인 특화)
-│   ├── module.py                   # DI 바인딩 (템플릿별)
+├── cooking_assistant/               # 📦 Application (템플릿)
+│   ├── module.py                   # DI 설정 (Port→Adapter 바인딩)
 │   ├── entities/                   # 도메인 엔티티
 │   │   ├── recipe.py
 │   │   ├── recommendation.py
 │   │   └── question.py
-│   ├── models/                     # DTO & Response 모델
+│   ├── models/                     # DTO & Response
 │   │   ├── schemas.py
 │   │   └── response_codes.py
-│   ├── services/                   # 비즈니스 로직 서비스
+│   ├── services/                   # 비즈니스 로직
 │   │   └── cooking_service.py
 │   ├── workflow/                   # LangGraph Workflow
 │   │   ├── cooking_workflow.py
 │   │   ├── states/
-│   │   │   └── cooking_state.py
-│   │   ├── nodes/                  # Workflow Nodes
+│   │   │   └── cooking_state.py   # Workflow State
+│   │   ├── nodes/
 │   │   │   ├── base_node.py
 │   │   │   ├── intent_classifier_node.py
 │   │   │   ├── recipe_generator_node.py
 │   │   │   ├── recommender_node.py
 │   │   │   ├── question_answerer_node.py
 │   │   │   └── image_generator_node.py
-│   │   └── edges/                  # Workflow Edges
+│   │   └── edges/
 │   │       └── intent_router.py
-│   ├── api/                        # API Routes
+│   ├── api/
 │   │   └── routes.py
-│   ├── prompts/                    # 프롬프트 템플릿
+│   ├── prompts/
 │   │   └── cooking.yaml
-│   └── exceptions.py               # 도메인 예외
+│   └── exceptions.py
 │
-└── main.py                          # FastAPI 앱 진입점
+└── main.py                          # FastAPI 진입점
 ```
 
 ### 구조 설명
@@ -230,99 +233,108 @@ class OpenAIAdapter(ILLMPort):
 ### 2. Pure Adapter 원칙
 
 **Adapter의 책임:**
-- ✅ API 호출
-- ✅ 결과 파싱 (JSON → Dict)
-- ❌ 프롬프트 선택 (비즈니스 로직)
-- ❌ 프롬프트 렌더링 (비즈니스 로직)
-- ❌ 엔티티 변환 (비즈니스 로직)
+- ✅ API 호출 및 결과 파싱만
 
-**호출자(Node, Service)의 책임:**
-- ✅ 프롬프트 선택
-- ✅ 프롬프트 렌더링
+**Node/Service의 책임:**
+- ✅ 프롬프트 선택 및 렌더링
 - ✅ 엔티티 변환 및 검증
+
+**실제 예시:**
+```python
+# ❌ Bad: Adapter에 비즈니스 로직
+class BadAdapter(ILLMPort):
+    async def generate_recipe(self, query: str):
+        # 프롬프트 선택 - 비즈니스 로직! (X)
+        prompt_id = "cooking.generate_recipe_single"
+        prompt = self.prompt_loader.render(prompt_id, query=query)
+        return self.llm.invoke(prompt)
+
+# ✅ Good: Adapter는 API 호출만
+class GoodAdapter(ILLMPort):
+    async def generate_recipe(self, prompt: str):
+        # 렌더링된 프롬프트를 받아 API만 호출
+        response = self.llm.invoke([HumanMessage(content=prompt)])
+        return json.loads(response.content)
+
+# Node에서 비즈니스 로직 수행
+class RecipeGeneratorNode:
+    async def execute(self, state):
+        # 비즈니스 로직: 프롬프트 선택
+        prompt_id = "cooking.generate_recipe_single"
+        # 비즈니스 로직: 렌더링
+        prompt = self.prompt_loader.render(prompt_id, query=state["user_query"])
+        # Adapter: 순수 API 호출만
+        recipe_data = await self.llm_port.generate_recipe(prompt)
+        return recipe_data
+```
 
 ### 3. 레이어별 책임
 
-**API Layer (Routes):**
-- HTTP 요청/응답 처리
-- 인증 확인
-- Service 호출
-
-**Service Layer:**
-- 비즈니스 로직 조합
-- Workflow 실행
-- Entity → DTO 변환
-
-**Workflow Layer:**
-- 노드 실행 순서 정의
-- State 관리
-
-**Node Layer:**
-- 프롬프트 선택 및 렌더링
-- Port를 통한 외부 API 호출
-- 결과를 Entity로 변환
-
-**Adapter Layer:**
-- 순수 API 호출 및 파싱만
+| 레이어 | 책임 |
+|--------|------|
+| **API** | HTTP 요청/응답, 인증, Service 호출 |
+| **Service** | 비즈니스 로직 조합, Workflow 실행, Entity→DTO 변환 |
+| **Workflow** | 노드 실행 순서, State 관리 |
+| **Node** | 프롬프트 선택/렌더링, Port 호출, Entity 변환 |
+| **Adapter** | 순수 API 호출 및 파싱만 |
 
 ---
 
 ## Secondary Intent 처리
 
-이 프레임워크는 **복합 의도 처리**를 지원합니다.
+하나의 쿼리에서 여러 작업을 동시에 처리합니다.
 
 ### 예시
-```
-사용자 쿼리: "매운 음식 추천해주고, 김치찌개 레시피도 알려줘"
+```bash
+# 사용자 쿼리
+"매운 음식 추천해주고, 김치찌개 레시피도 알려줘"
 
-분류 결과:
-- primary_intent: "recommend"
-- secondary_intents: ["recipe_create"]
+# 분류 결과
+primary_intent: "recommend"
+secondary_intents: ["recipe_create"]
 
-워크플로우 실행 순서:
-1. Recommender Node (primary) → 추천 목록 생성
-2. Recipe Generator Node (secondary) → 레시피 생성
+# 워크플로우 실행
+1. Recommender Node → 추천 생성
+2. Recipe Generator Node → 레시피 생성
 
-최종 응답:
+# 최종 응답
 {
   "code": "RECOMMENDATION_SUCCESS",
   "data": {
     "recommendations": [...],
     "secondary_results": [
-      {
-        "intent": "recipe_create",
-        "recipe": {...}
-      }
+      {"intent": "recipe_create", "recipe": {...}}
     ]
   }
 }
 ```
 
-### 구현 방식
+### 핵심 구현
 
-**1. BaseNode에서 자동 처리:**
+**1. State에 추적 필드 추가:**
 ```python
-# app/cooking_assistant/workflow/nodes/base_node.py
-class BaseNode(ABC):
-    def _handle_secondary_intent(self, state: CookingState):
-        if secondary_intents and secondary_intents[0] == self.intent_name:
-            processed_intent = secondary_intents.pop(0)
-            state["processed_secondary_intents"].append(processed_intent)
+class CookingState(TypedDict):
+    secondary_intents: List[str]           # 처리할 intent 목록
+    processed_secondary_intents: List[str]  # 처리 완료된 intent 목록
 ```
 
-**2. Service에서 결과 수집:**
+**2. BaseNode에서 자동 처리:**
 ```python
-# app/cooking_assistant/services/cooking_service.py
-def _to_dto(self, state: CookingState):
-    # Primary intent 응답 생성
-    response = self._create_response_by_intent(state["primary_intent"], state)
+def _handle_secondary_intent(self, state: CookingState):
+    if secondary_intents and secondary_intents[0] == self.intent_name:
+        processed = secondary_intents.pop(0)
+        state["processed_secondary_intents"].append(processed)
+```
 
-    # Secondary intents 결과 수집
-    secondary_results = self._collect_secondary_results(state)
-
-    # 응답에 추가
-    response.data.secondary_results = secondary_results
-    return response
+**3. Service에서 결과 수집:**
+```python
+def _collect_secondary_results(self, state: CookingState):
+    results = []
+    for intent in state.get("processed_secondary_intents", []):
+        result = self._extract_result_by_intent(intent, state)
+        if result:
+            results.append(result)
+    return results
 ```
 
 ---
