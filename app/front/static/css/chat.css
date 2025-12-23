@@ -153,29 +153,87 @@ body {
     cursor: not-allowed;
 }
 
-/* 추천 액션 버튼 (채팅 내) */
-.action-buttons {
+/* 채팅 내 레시피 카드 리스트 (메시지 버블 밖) */
+.chat-recipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 8px 0 16px 0;
+    max-width: 100%;
+}
+
+/* 채팅 내 레시피 카드 스타일 */
+.chat-recipe-list .recipe-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.chat-recipe-list .recipe-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-recipe-list .recipe-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.chat-recipe-list .recipe-card-header h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+}
+
+.chat-recipe-list .recipe-card-actions {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
-    flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
-.message .action-btn {
-    padding: 8px 16px;
-    border: 1px solid #4a9d7c;
-    background-color: white;
-    color: #4a9d7c;
-    border-radius: 20px;
+.chat-recipe-list .recipe-card-actions button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
     transition: all 0.2s;
-    flex: none;
 }
 
-.message .action-btn:hover {
+.chat-recipe-list .btn-recipe {
     background-color: #4a9d7c;
     color: white;
+    border: none;
+}
+
+.chat-recipe-list .btn-recipe:hover {
+    background-color: #3d8568;
+}
+
+.chat-recipe-list .btn-cart {
+    background-color: white;
+    color: #4a9d7c;
+    border: 1px solid #4a9d7c;
+}
+
+.chat-recipe-list .btn-cart:hover {
+    background-color: #e8f5e9;
+}
+
+.chat-recipe-list .recipe-card-ingredients {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.chat-recipe-list .recipe-card-discount {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #fff3e0;
+    color: #e65100;
+    font-size: 0.85rem;
+    border-radius: 4px;
 }
 
 /* 스크롤바 스타일 */

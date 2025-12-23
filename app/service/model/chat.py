@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Literal, Any
+from app.service.model.common import RecipeItem
 
 
 class ChatRequest(BaseModel):
@@ -17,4 +18,5 @@ class ChatAction(BaseModel):
 class ChatResponse(BaseModel):
     """채팅 응답"""
     content: str
+    recipes: Optional[List[RecipeItem]] = None
     actions: Optional[List[ChatAction]] = None

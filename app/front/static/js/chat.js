@@ -6,6 +6,8 @@ const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 
+let currentRecipes = [];
+
 // 텍스트 영역 자동 높이 조절
 userInput.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -55,8 +57,13 @@ async function sendMessage() {
         // 타이핑 인디케이터 제거
         hideTypingIndicator();
 
+        // 레시피가 있으면 저장
+        if (data.recipes && data.recipes.length > 0) {
+            currentRecipes = [...currentRecipes, ...data.recipes];
+        }
+
         // AI 응답 추가
-        addMessageToDOM(data.content, 'ai', data.actions);
+        addMessageToDOM(data.content, 'ai', data.recipes);
     } catch (error) {
         console.error('채팅 API 오류:', error);
         hideTypingIndicator();
@@ -68,27 +75,41 @@ async function sendMessage() {
 }
 
 // DOM에 메시지 추가
-function addMessageToDOM(content, type, actions = null) {
+function addMessageToDOM(content, type, recipes = null) {
+    // 텍스트 메시지 추가
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
+    messageDiv.innerHTML = `<div class="message-content">${formatMessage(content)}</div>`;
+    chatMessages.appendChild(messageDiv);
 
-    let html = `<div class="message-content">${formatMessage(content)}</div>`;
-
-    // 액션 버튼 추가
-    if (actions && actions.length > 0) {
-        html = `
-            <div class="message-content">
-                ${formatMessage(content)}
-                <div class="action-buttons">
-                    ${actions.map(a => `<button class="action-btn" onclick="handleAction('${a.type}', ${JSON.stringify(a.data).replace(/"/g, '&quot;')})">${a.label}</button>`).join('')}
-                </div>
-            </div>
-        `;
+    // 레시피 카드가 있으면 별도 영역으로 추가
+    if (recipes && recipes.length > 0) {
+        const recipeListDiv = document.createElement('div');
+        recipeListDiv.className = 'chat-recipe-list';
+        recipeListDiv.innerHTML = recipes.map(recipe => renderRecipeCard(recipe)).join('');
+        chatMessages.appendChild(recipeListDiv);
     }
 
-    messageDiv.innerHTML = html;
-    chatMessages.appendChild(messageDiv);
     scrollToBottom();
+}
+
+// 레시피 카드 렌더링 (다른 페이지와 동일한 구조)
+function renderRecipeCard(recipe) {
+    return `
+        <div class="recipe-card" data-id="${recipe.id}">
+            <div class="recipe-card-header">
+                <h3>${recipe.name}</h3>
+                <div class="recipe-card-actions">
+                    <button class="btn-recipe" onclick="showRecipeModal('${recipe.id}')">레시피</button>
+                    <button class="btn-cart" onclick="addToCart('${recipe.id}')">담기</button>
+                </div>
+            </div>
+            <p class="recipe-card-ingredients">재료: ${recipe.ingredients.join(', ')}</p>
+            ${recipe.discountInfo && recipe.discountInfo.length > 0
+                ? `<span class="recipe-card-discount">${recipe.discountInfo.map(d => `${d.item} ${d.rate} 할인`).join(', ')}</span>`
+                : ''}
+        </div>
+    `;
 }
 
 // 메시지 포맷팅 (줄바꿈 처리)
@@ -125,34 +146,34 @@ function hideTypingIndicator() {
     }
 }
 
-// 액션 버튼 핸들러
-async function handleAction(type, data) {
-    switch (type) {
-        case 'recipe':
-            if (data && data.id) {
-                // 레시피 상세 페이지로 이동 또는 모달 표시
-                window.location.href = `recipe.html?id=${data.id}`;
-            }
-            break;
-        case 'cart':
-            if (data && data.items) {
-                await addToCart(data.items);
-            }
-            break;
-        case 'ingredients':
-            if (data && data.items) {
-                alert(`필요한 재료: ${data.items.join(', ')}`);
-            }
-            break;
-        default:
-            console.log('Unknown action:', type, data);
-    }
+// 레시피 모달 표시
+function showRecipeModal(recipeId) {
+    const recipe = currentRecipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+
+    document.getElementById('modalTitle').textContent = recipe.name;
+    document.getElementById('modalTime').textContent = `조리시간: ${recipe.cookTime}`;
+    document.getElementById('modalDifficulty').textContent = `난이도: ${recipe.difficulty}`;
+    document.getElementById('modalIngredients').innerHTML = recipe.ingredients.map(i => `<li>${i}</li>`).join('');
+    document.getElementById('modalSteps').innerHTML = recipe.steps.map(s => `<li>${s}</li>`).join('');
+
+    document.getElementById('recipeModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// 모달 닫기
+function closeModal() {
+    document.getElementById('recipeModal').classList.remove('show');
+    document.body.style.overflow = '';
 }
 
 // 장바구니에 추가
-async function addToCart(items) {
+async function addToCart(recipeId) {
+    const recipe = currentRecipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+
     try {
-        const cartItems = items.map(name => ({ name, quantity: 1 }));
+        const cartItems = recipe.ingredients.map(name => ({ name, quantity: 1 }));
         const response = await fetch(`${API_BASE}/cart/add`, {
             method: 'POST',
             headers: {
@@ -162,7 +183,7 @@ async function addToCart(items) {
         });
 
         if (response.ok) {
-            alert('장바구니에 담았습니다!');
+            alert(`${recipe.name}의 재료를 장바구니에 담았습니다!`);
         } else {
             throw new Error('장바구니 추가 실패');
         }
@@ -171,3 +192,17 @@ async function addToCart(items) {
         alert('장바구니 추가에 실패했습니다.');
     }
 }
+
+// 모달 바깥 클릭 시 닫기
+document.getElementById('recipeModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});

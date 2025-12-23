@@ -53,6 +53,30 @@
         </footer>
     </div>
 
+    <!-- 레시피 모달 -->
+    <div class="modal-overlay" id="recipeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">레시피</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-meta">
+                    <span id="modalTime">조리시간: -</span>
+                    <span id="modalDifficulty">난이도: -</span>
+                </div>
+                <div class="modal-section">
+                    <h3>재료</h3>
+                    <ul id="modalIngredients"></ul>
+                </div>
+                <div class="modal-section">
+                    <h3>조리 순서</h3>
+                    <ul class="modal-steps" id="modalSteps"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="/static/js/chat.js"></script>
 </body>
 </html>
