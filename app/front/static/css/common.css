@@ -244,6 +244,228 @@ body {
     background-color: #e8f5e9;
 }
 
+/* 요리 카드 리스트 */
+.recipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.recipe-card {
+    padding: 16px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    transition: box-shadow 0.2s;
+}
+
+.recipe-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.recipe-card-header h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+}
+
+.recipe-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.recipe-card-actions button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-recipe {
+    background-color: #4a9d7c;
+    color: white;
+    border: none;
+}
+
+.btn-recipe:hover {
+    background-color: #3d8568;
+}
+
+.btn-cart {
+    background-color: white;
+    color: #4a9d7c;
+    border: 1px solid #4a9d7c;
+}
+
+.btn-cart:hover {
+    background-color: #e8f5e9;
+}
+
+.recipe-card-ingredients {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.recipe-card-discount {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #fff3e0;
+    color: #e65100;
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.recipe-card-missing {
+    font-size: 0.85rem;
+    color: #d32f2f;
+    margin-bottom: 8px;
+}
+
+.recipe-card-complete {
+    font-size: 0.85rem;
+    color: #2e7d32;
+    margin-bottom: 8px;
+}
+
+/* 모달 (레시피 팝업) */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-header h2 {
+    font-size: 1.2rem;
+    color: #333;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #999;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.modal-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.modal-section {
+    margin-bottom: 20px;
+}
+
+.modal-section h3 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-section ul {
+    padding-left: 20px;
+    color: #555;
+}
+
+.modal-section li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.modal-steps {
+    counter-reset: step;
+}
+
+.modal-steps li {
+    counter-increment: step;
+    list-style: none;
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 12px;
+}
+
+.modal-steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background-color: #4a9d7c;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* 반응형 */
 @media (max-width: 480px) {
     .feature-header {

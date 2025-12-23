@@ -13,6 +13,46 @@ smart.html (메인 허브)
 
 ---
 
+## 공통 UI 컴포넌트
+
+### 레시피 카드
+모든 추천 결과 페이지에서 동일한 구조 사용
+
+```
+┌─────────────────────────────────────┐
+│ 요리명                  [레시피] [담기] │
+│ 재료: 재료1, 재료2, 재료3...           │
+│ 🏷️ 할인정보 (있을 경우)               │
+└─────────────────────────────────────┘
+```
+
+- **[레시피]** 버튼: 모달 팝업으로 레시피 상세 표시
+- **[담기]** 버튼: 해당 요리 재료를 장바구니에 추가
+
+### 레시피 모달
+[레시피] 버튼 클릭 시 표시되는 팝업
+
+```
+┌─────────────────────────────────────┐
+│ 요리명                           ✕  │
+├─────────────────────────────────────┤
+│ 조리시간: 30분    난이도: 쉬움         │
+│                                     │
+│ ■ 재료                              │
+│ • 재료1                             │
+│ • 재료2                             │
+│                                     │
+│ ■ 조리 순서                          │
+│ ① 첫 번째 단계                       │
+│ ② 두 번째 단계                       │
+│ ③ 세 번째 단계                       │
+└─────────────────────────────────────┘
+```
+
+- ESC 키 또는 모달 바깥 클릭으로 닫기
+
+---
+
 ## 1. smart.html - 스마트 AI 메인
 
 ### 화면 설명
@@ -48,7 +88,7 @@ AI와 자유롭게 대화하며 요리 관련 질문을 할 수 있는 채팅 �
 ### API 요구사항
 | API | Method | Endpoint | Request | Response |
 |-----|--------|----------|---------|----------|
-| 채팅 메시지 전송 | POST | `/api/chat` | `{ message: string }` | `{ content: string, actions?: Action[] }` |
+| 채팅 메시지 전송 | POST | `/api/chat` | `{ message: string }` | `ChatResponse` |
 
 #### Response 타입
 ```typescript
@@ -75,16 +115,16 @@ interface ChatResponse {
 | 카테고리 선택 | 한식, 중식, 일식, 양식 (다중 선택) |
 | 조건 입력 | 추가 조건 텍스트 입력 |
 | 추천 요청 | 선택/입력값 기반 추천 요청 |
-| 결과 표시 | 추천 요리 목록 (요리별 재료 + 할인정보) |
-| 레시피 보기 | 요리별 개별 버튼 → 모달로 레시피 상세 |
-| 장바구니 담기 | 요리별 개별 버튼 → 해당 요리 재료 담기 |
+| 결과 표시 | 레시피 카드 목록 (재료 + 할인정보) |
+| 레시피 보기 | 카드별 [레시피] 버튼 → 모달 표시 |
+| 장바구니 담기 | 카드별 [담기] 버튼 → 재료 담기 |
 
 ### 화면 결과 예시
 ```
 추천 결과:
 ┌─────────────────────────────────────┐
 │ 김치찌개                [레시피] [담기] │
-│ 재료: 김치, 돼지고기, 두부, 대파        │
+│ 재료: 돼지고기, 김치, 두부, 대파        │
 │ 🏷️ 돼지고기 30% 할인                  │
 ├─────────────────────────────────────┤
 │ 된장찌개                [레시피] [담기] │
@@ -104,17 +144,15 @@ interface RecommendResponse {
   recipes: {
     id: string;
     name: string;
-    description: string;
     cookTime: string;
     difficulty: string;
     ingredients: string[];
+    steps: string[];
     discountInfo?: {
       item: string;
       rate: string;
-      price?: number;
     }[];
   }[];
-  tip?: string;
 }
 ```
 
@@ -131,24 +169,39 @@ interface RecommendResponse {
 | 검색어 입력 | 요리명 텍스트 입력 |
 | 검색 실행 | 엔터 또는 버튼 클릭으로 검색 |
 | 인기 검색어 | 빠른 검색을 위한 태그 버튼 |
-| 결과 표시 | 레시피 정보 (조리시간, 난이도, 재료) |
-| 레시피 상세 | 조리 단계 보기 |
-| 장바구니 담기 | 필요 재료 장바구니에 추가 |
+| 결과 표시 | 레시피 카드 목록 |
+| 레시피 보기 | 카드별 [레시피] 버튼 → 모달 표시 |
+| 장바구니 담기 | 카드별 [담기] 버튼 → 재료 담기 |
+
+### 화면 결과 예시
+```
+검색 결과:
+┌─────────────────────────────────────┐
+│ 김치찌개                [레시피] [담기] │
+│ 재료: 돼지고기, 김치, 두부, 대파        │
+├─────────────────────────────────────┤
+│ 참치김치찌개            [레시피] [담기] │
+│ 재료: 참치캔, 김치, 두부, 대파          │
+└─────────────────────────────────────┘
+```
 
 ### API 요구사항
 | API | Method | Endpoint | Request | Response |
 |-----|--------|----------|---------|----------|
-| 레시피 검색 | GET | `/api/recipe/search` | `?keyword={keyword}` | `RecipeResponse` |
+| 레시피 검색 | GET | `/api/recipe/search` | `?keyword={keyword}` | `RecipeSearchResponse` |
 | 인기 검색어 | GET | `/api/recipe/popular` | - | `string[]` |
 
 #### Response 타입
 ```typescript
-interface RecipeResponse {
-  name: string;
-  cookTime: string;
-  difficulty: string;
-  ingredients: string[];
-  steps: string[];
+interface RecipeSearchResponse {
+  recipes: {
+    id: string;
+    name: string;
+    cookTime: string;
+    difficulty: string;
+    ingredients: string[];
+    steps: string[];
+  }[];
 }
 ```
 
@@ -166,9 +219,23 @@ interface RecipeResponse {
 | 상품 선택 | 관심있는 할인상품 선택 (다중 선택) |
 | 상품 추가 | 다른 할인상품 직접 입력 |
 | 추천 요청 | 선택한 상품 기반 요리 추천 |
-| 결과 표시 | 추천 요리 및 할인 정보 표시 |
-| 레시피 보기 | 추천된 요리의 레시피 상세 보기 |
-| 장바구니 담기 | 할인상품 장바구니에 추가 |
+| 결과 표시 | 레시피 카드 목록 (할인정보 포함) |
+| 레시피 보기 | 카드별 [레시피] 버튼 → 모달 표시 |
+| 장바구니 담기 | 카드별 [담기] 버튼 → 재료 담기 |
+
+### 화면 결과 예시
+```
+추천 결과:
+┌─────────────────────────────────────┐
+│ 삼겹살 김치찌개          [레시피] [담기] │
+│ 재료: 삼겹살, 김치, 두부, 대파, 고춧가루  │
+│ 🏷️ 삼겹살 30% 할인, 두부 1+1 할인     │
+├─────────────────────────────────────┤
+│ 제육볶음                [레시피] [담기] │
+│ 재료: 삼겹살, 고추장, 양파, 대파, 마늘   │
+│ 🏷️ 삼겹살 30% 할인, 고추장 20% 할인   │
+└─────────────────────────────────────┘
+```
 
 ### API 요구사항
 | API | Method | Endpoint | Request | Response |
@@ -181,19 +248,21 @@ interface RecipeResponse {
 interface DiscountItem {
   name: string;
   discountRate: string;  // "50%", "30%", "1+1" 등
-  originalPrice?: number;
-  discountPrice?: number;
 }
 
 interface DiscountRecommendResponse {
-  recipe: {
+  recipes: {
+    id: string;
     name: string;
-    description: string;
-  };
-  discountInfo: {
-    item: string;
-    rate: string;
-    price: number;
+    cookTime: string;
+    difficulty: string;
+    ingredients: string[];
+    steps: string[];
+    discountInfo: {
+      item: string;
+      rate: string;
+    }[];
+    relatedItems: string[];  // 선택한 할인상품과 매칭되는 재료
   }[];
 }
 ```
@@ -213,9 +282,24 @@ interface DiscountRecommendResponse {
 | 재료 삭제 | 추가한 재료 삭제 |
 | 선택 재료 표시 | 현재 선택된 모든 재료 표시 |
 | 추천 요청 | 선택한 재료 기반 요리 추천 |
-| 결과 표시 | 추천 요리 및 할인 정보 표시 |
-| 레시피 보기 | 추천된 요리의 레시피 상세 보기 |
-| 장바구니 담기 | 부족한 재료 장바구니에 추가 |
+| 결과 표시 | 레시피 카드 목록 (부족한 재료 표시) |
+| 레시피 보기 | 카드별 [레시피] 버튼 → 모달 표시 |
+| 장바구니 담기 | 카드별 [담기] 버튼 → 재료 담기 |
+
+### 화면 결과 예시
+```
+추천 결과:
+┌─────────────────────────────────────┐
+│ 김치찌개                [레시피] [담기] │
+│ 재료: 삼겹살, 김치, 두부, 대파, 고춧가루  │
+│ ⚠️ 부족한 재료: 고춧가루               │
+│ 🏷️ 삼겹살 30% 할인                   │
+├─────────────────────────────────────┤
+│ 계란말이                [레시피] [담기] │
+│ 재료: 계란, 대파, 당근, 소금           │
+│ ✅ 모든 재료가 있어요!                 │
+└─────────────────────────────────────┘
+```
 
 ### API 요구사항
 | API | Method | Endpoint | Request | Response |
@@ -225,17 +309,19 @@ interface DiscountRecommendResponse {
 #### Response 타입
 ```typescript
 interface FridgeRecommendResponse {
-  recipe: {
+  recipes: {
+    id: string;
     name: string;
-    description: string;
-  };
-  availableIngredients: string[];
-  missingIngredients: string[];
-  discountInfo?: {
-    item: string;
-    rate: string;
-    price: number;
-  };
+    cookTime: string;
+    difficulty: string;
+    ingredients: string[];
+    steps: string[];
+    requiredIngredients: string[];  // 필수 재료 (매칭에 사용)
+    discountInfo?: {
+      item: string;
+      rate: string;
+    }[];
+  }[];
 }
 ```
 
@@ -297,3 +383,11 @@ interface RecipeDetail {
 | 공통 | 3 | POST /api/cart/add, GET /api/cart, GET /api/recipe/{id} |
 
 **총 API 개수: 10개**
+
+---
+
+## 향후 확장 기능 (메모)
+
+- 레시피 생성시 계량(스푼, 컵, ml 등등)을 사용자 지정 가능하게
+- 간단버전 레시피, 풀버전 레시피를 사용자 지정 가능하게 (시간, 분 설정)
+- 건강식을 가미한 레시피 (올리고당 등등...)

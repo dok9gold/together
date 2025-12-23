@@ -18,9 +18,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API 라우터 등록 (나중에 추가)
-# from app.api import router as api_router
-# app.include_router(api_router, prefix="/api")
+# API 라우터 등록
+from app.api import router as api_router
+app.include_router(api_router)
 
 # Static 파일 서빙 (맨 마지막에 등록)
 mount_static(app)
