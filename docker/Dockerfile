@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y \
 # 의존성 파일 복사 및 설치
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# psycopg2 추가 설치 (PostgreSQL 드라이버)
-RUN pip install --no-cache-dir psycopg2-binary sqlalchemy asyncpg
 
 # 애플리케이션 코드 복사
 COPY app/ ./app/
