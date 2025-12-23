@@ -1,3 +1,7 @@
+// 채팅 페이지 JS - API 연동
+
+const API_BASE = '/api';
+
 const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
@@ -33,15 +37,28 @@ async function sendMessage() {
     showTypingIndicator();
 
     try {
-        // API 호출 (추후 실제 API로 교체)
-        const response = await mockApiCall(message);
+        // API 호출
+        const response = await fetch(`${API_BASE}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        });
+
+        if (!response.ok) {
+            throw new Error('API 호출 실패');
+        }
+
+        const data = await response.json();
 
         // 타이핑 인디케이터 제거
         hideTypingIndicator();
 
         // AI 응답 추가
-        addMessageToDOM(response.content, 'ai', response.actions);
+        addMessageToDOM(data.content, 'ai', data.actions);
     } catch (error) {
+        console.error('채팅 API 오류:', error);
         hideTypingIndicator();
         addMessageToDOM('죄송합니다. 오류가 발생했습니다. 다시 시도해주세요.', 'ai');
     }
@@ -63,7 +80,7 @@ function addMessageToDOM(content, type, actions = null) {
             <div class="message-content">
                 ${formatMessage(content)}
                 <div class="action-buttons">
-                    ${actions.map(a => `<button class="action-btn" onclick="${a.onclick}">${a.label}</button>`).join('')}
+                    ${actions.map(a => `<button class="action-btn" onclick="handleAction('${a.type}', ${JSON.stringify(a.data).replace(/"/g, '&quot;')})">${a.label}</button>`).join('')}
                 </div>
             </div>
         `;
@@ -108,45 +125,49 @@ function hideTypingIndicator() {
     }
 }
 
-// Mock API 호출 (추후 실제 API로 교체)
-async function mockApiCall(message) {
-    // 1~2초 딜레이
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-
-    // 간단한 응답 로직
-    if (message.includes('삼겹살')) {
-        return {
-            content: '삼겹살로 만들 수 있는 요리를 추천해드릴게요!\n\n1. 삼겹살 김치찌개\n2. 대패삼겹 숙주볶음\n3. 삼겹살 된장찌개\n4. 삼겹살 볶음밥\n\n지금 마트에서 삼겹살이 30% 할인 중이에요!',
-            actions: [
-                { label: '레시피 보기', onclick: 'showRecipe()' },
-                { label: '장바구니 담기', onclick: 'addToCart()' }
-            ]
-        };
-    } else if (message.includes('저녁') || message.includes('추천')) {
-        return {
-            content: '간단한 저녁 메뉴 추천이요!\n\n1. 제육볶음 - 30분\n2. 계란말이 - 15분\n3. 김치볶음밥 - 20분\n4. 된장찌개 - 25분\n\n어떤 요리가 끌리세요?',
-            actions: [
-                { label: '레시피 보기', onclick: 'showRecipe()' },
-                { label: '재료 확인', onclick: 'showIngredients()' }
-            ]
-        };
-    } else {
-        return {
-            content: `"${message}"에 대해 알아볼게요!\n\n관련 요리를 찾아보고 있어요. 조금만 기다려주세요...`,
-            actions: null
-        };
+// 액션 버튼 핸들러
+async function handleAction(type, data) {
+    switch (type) {
+        case 'recipe':
+            if (data && data.id) {
+                // 레시피 상세 페이지로 이동 또는 모달 표시
+                window.location.href = `recipe.html?id=${data.id}`;
+            }
+            break;
+        case 'cart':
+            if (data && data.items) {
+                await addToCart(data.items);
+            }
+            break;
+        case 'ingredients':
+            if (data && data.items) {
+                alert(`필요한 재료: ${data.items.join(', ')}`);
+            }
+            break;
+        default:
+            console.log('Unknown action:', type, data);
     }
 }
 
-// 액션 함수들 (추후 구현)
-function showRecipe() {
-    alert('레시피 상세 페이지로 이동합니다!');
-}
+// 장바구니에 추가
+async function addToCart(items) {
+    try {
+        const cartItems = items.map(name => ({ name, quantity: 1 }));
+        const response = await fetch(`${API_BASE}/cart/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: cartItems })
+        });
 
-function addToCart() {
-    alert('장바구니에 담았습니다!');
-}
-
-function showIngredients() {
-    alert('필요한 재료 목록을 보여드립니다!');
+        if (response.ok) {
+            alert('장바구니에 담았습니다!');
+        } else {
+            throw new Error('장바구니 추가 실패');
+        }
+    } catch (error) {
+        console.error('장바구니 API 오류:', error);
+        alert('장바구니 추가에 실패했습니다.');
+    }
 }

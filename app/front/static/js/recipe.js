@@ -1,62 +1,39 @@
-// 레시피 검색 페이지 JS
+// 레시피 검색 페이지 JS - API 연동
 
-// Mock 데이터 (추후 API로 교체)
-const mockRecipes = {
-    '김치찌개': {
-        id: '1',
-        name: '김치찌개',
-        cookTime: '30분',
-        difficulty: '쉬움',
-        ingredients: ['김치', '돼지고기', '두부', '대파', '고춧가루'],
-        discountInfo: [{ item: '돼지고기', rate: '30%' }],
-        steps: ['김치를 먹기 좋은 크기로 썬다', '냄비에 참기름을 두르고 김치를 볶는다', '물을 붓고 돼지고기를 넣어 끓인다', '두부와 대파를 넣고 마무리한다']
-    },
-    '된장찌개': {
-        id: '2',
-        name: '된장찌개',
-        cookTime: '25분',
-        difficulty: '쉬움',
-        ingredients: ['된장', '두부', '애호박', '감자', '대파'],
-        discountInfo: [{ item: '두부', rate: '1+1' }],
-        steps: ['감자와 애호박을 깍둑썰기한다', '냄비에 물을 붓고 된장을 푼다', '감자를 먼저 넣고 끓인다', '애호박, 두부, 대파를 넣고 마무리한다']
-    },
-    '제육볶음': {
-        id: '3',
-        name: '제육볶음',
-        cookTime: '20분',
-        difficulty: '보통',
-        ingredients: ['돼지고기', '고추장', '양파', '대파', '마늘'],
-        discountInfo: [{ item: '돼지고기', rate: '30%' }],
-        steps: ['돼지고기에 고추장 양념을 버무린다', '양파와 대파를 썬다', '팬에 기름을 두르고 고기를 볶는다', '야채를 넣고 함께 볶아 완성한다']
-    },
-    '불고기': {
-        id: '4',
-        name: '불고기',
-        cookTime: '40분',
-        difficulty: '보통',
-        ingredients: ['소고기', '간장', '배', '양파', '마늘'],
-        discountInfo: [{ item: '소고기', rate: '20%' }],
-        steps: ['소고기를 얇게 썬다', '간장, 배즙, 마늘로 양념을 만든다', '고기에 양념을 버무려 30분 재운다', '팬에 구워 완성한다']
-    },
-    '파스타': {
-        id: '5',
-        name: '파스타',
-        cookTime: '25분',
-        difficulty: '쉬움',
-        ingredients: ['파스타면', '올리브오일', '마늘', '베이컨', '파마산치즈'],
-        discountInfo: [{ item: '파스타면', rate: '15%' }],
-        steps: ['파스타를 삶는다', '팬에 올리브오일과 마늘을 볶는다', '베이컨을 넣고 볶는다', '삶은 파스타를 넣고 섞어 완성한다']
-    }
-};
+const API_BASE = '/api';
 
 let currentRecipes = [];
+
+// 페이지 로드 시 인기 검색어 가져오기
+document.addEventListener('DOMContentLoaded', loadPopularKeywords);
+
+async function loadPopularKeywords() {
+    try {
+        const response = await fetch(`${API_BASE}/recipe/popular`);
+        if (response.ok) {
+            const keywords = await response.json();
+            renderPopularKeywords(keywords);
+        }
+    } catch (error) {
+        console.error('인기 검색어 로드 실패:', error);
+    }
+}
+
+function renderPopularKeywords(keywords) {
+    const container = document.querySelector('.popular-tags');
+    if (!container) return;
+
+    container.innerHTML = keywords.map(keyword =>
+        `<button class="popular-tag" onclick="quickSearch('${keyword}')">${keyword}</button>`
+    ).join('');
+}
 
 function quickSearch(keyword) {
     document.getElementById('searchInput').value = keyword;
     searchRecipe();
 }
 
-function searchRecipe() {
+async function searchRecipe() {
     const keyword = document.getElementById('searchInput').value.trim();
 
     if (!keyword) {
@@ -64,38 +41,30 @@ function searchRecipe() {
         return;
     }
 
-    // Mock 데이터에서 검색
-    currentRecipes = [];
+    try {
+        // API 호출
+        const response = await fetch(`${API_BASE}/recipe/search?keyword=${encodeURIComponent(keyword)}`);
 
-    // 정확히 일치하는 레시피 찾기
-    if (mockRecipes[keyword]) {
-        currentRecipes.push(mockRecipes[keyword]);
-    } else {
-        // 부분 일치 검색
-        Object.values(mockRecipes).forEach(recipe => {
-            if (recipe.name.includes(keyword)) {
-                currentRecipes.push(recipe);
-            }
-        });
+        if (!response.ok) {
+            throw new Error('API 호출 실패');
+        }
+
+        const data = await response.json();
+        currentRecipes = data.recipes;
+
+        if (currentRecipes.length === 0) {
+            alert('검색 결과가 없습니다.');
+            return;
+        }
+
+        renderRecipeCards(currentRecipes);
+
+        document.getElementById('resultSection').hidden = false;
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('검색 API 오류:', error);
+        alert('검색에 실패했습니다. 다시 시도해주세요.');
     }
-
-    // 검색 결과가 없으면 기본 레시피 생성
-    if (currentRecipes.length === 0) {
-        currentRecipes.push({
-            id: 'default',
-            name: keyword,
-            cookTime: '30분',
-            difficulty: '보통',
-            ingredients: ['재료1', '재료2', '재료3'],
-            discountInfo: [],
-            steps: ['재료를 준비한다', '조리한다', '완성한다']
-        });
-    }
-
-    renderRecipeCards(currentRecipes);
-
-    document.getElementById('resultSection').hidden = false;
-    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderRecipeCards(recipes) {
@@ -137,11 +106,29 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-function addToCart(recipeId) {
+async function addToCart(recipeId) {
     const recipe = currentRecipes.find(r => r.id === recipeId);
     if (!recipe) return;
 
-    alert(`${recipe.name}의 재료를 장바구니에 담았습니다!`);
+    try {
+        const cartItems = recipe.ingredients.map(name => ({ name, quantity: 1 }));
+        const response = await fetch(`${API_BASE}/cart/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: cartItems })
+        });
+
+        if (response.ok) {
+            alert(`${recipe.name}의 재료를 장바구니에 담았습니다!`);
+        } else {
+            throw new Error('장바구니 추가 실패');
+        }
+    } catch (error) {
+        console.error('장바구니 API 오류:', error);
+        alert('장바구니 추가에 실패했습니다.');
+    }
 }
 
 // 엔터키 검색

@@ -1,50 +1,47 @@
-// 할인상품 추천 페이지 JS
+// 할인상품 추천 페이지 JS - API 연동
 
-// Mock 데이터 (추후 API로 교체)
-const mockRecipes = [
-    {
-        id: '1',
-        name: '삼겹살 김치찌개',
-        cookTime: '30분',
-        difficulty: '쉬움',
-        ingredients: ['삼겹살', '김치', '두부', '대파', '고춧가루'],
-        discountInfo: [{ item: '삼겹살', rate: '30%' }, { item: '두부', rate: '1+1' }],
-        steps: ['삼겹살을 먹기 좋은 크기로 썬다', '냄비에 삼겹살과 김치를 볶는다', '물을 붓고 끓인다', '두부와 대파를 넣고 마무리한다'],
-        relatedItems: ['삼겹살', '두부']
-    },
-    {
-        id: '2',
-        name: '비빔밥',
-        cookTime: '35분',
-        difficulty: '보통',
-        ingredients: ['밥', '고추장', '들기름', '나물', '계란'],
-        discountInfo: [{ item: '들기름', rate: '50%' }, { item: '고추장', rate: '20%' }],
-        steps: ['나물을 각각 볶아 준비한다', '밥 위에 나물을 올린다', '계란 프라이를 올린다', '고추장과 들기름을 넣고 비빈다'],
-        relatedItems: ['들기름', '고추장']
-    },
-    {
-        id: '3',
-        name: '제육볶음',
-        cookTime: '25분',
-        difficulty: '쉬움',
-        ingredients: ['삼겹살', '고추장', '양파', '대파', '마늘'],
-        discountInfo: [{ item: '삼겹살', rate: '30%' }, { item: '고추장', rate: '20%' }],
-        steps: ['삼겹살에 고추장 양념을 버무린다', '양파와 대파를 썬다', '팬에 고기를 볶는다', '야채를 넣고 함께 볶아 완성한다'],
-        relatedItems: ['삼겹살', '고추장']
-    },
-    {
-        id: '4',
-        name: '두부조림',
-        cookTime: '20분',
-        difficulty: '쉬움',
-        ingredients: ['두부', '간장', '고춧가루', '대파', '마늘'],
-        discountInfo: [{ item: '두부', rate: '1+1' }],
-        steps: ['두부를 도톰하게 썬다', '팬에 두부를 노릇하게 굽는다', '양념장을 만들어 끼얹는다', '대파를 올려 마무리한다'],
-        relatedItems: ['두부']
-    }
-];
+const API_BASE = '/api';
 
 let currentRecipes = [];
+
+// 페이지 로드 시 오늘의 할인상품 가져오기
+document.addEventListener('DOMContentLoaded', loadTodayDiscounts);
+
+async function loadTodayDiscounts() {
+    try {
+        const response = await fetch(`${API_BASE}/discount/today`);
+        if (response.ok) {
+            const discounts = await response.json();
+            renderDiscountItems(discounts);
+        }
+    } catch (error) {
+        console.error('할인상품 로드 실패:', error);
+    }
+}
+
+function renderDiscountItems(discounts) {
+    // 할인상품 그리드 업데이트
+    const grid = document.querySelector('.discount-grid');
+    if (grid) {
+        grid.innerHTML = discounts.map(item => `
+            <div class="discount-item">
+                <span class="discount-badge">${item.discountRate}</span>
+                <span class="discount-name">${item.name}</span>
+            </div>
+        `).join('');
+    }
+
+    // 체크박스 그룹 업데이트
+    const checkboxGroup = document.querySelector('.checkbox-group');
+    if (checkboxGroup) {
+        checkboxGroup.innerHTML = discounts.map(item => `
+            <label class="checkbox-item">
+                <input type="checkbox" name="discount" value="${item.name}">
+                <span class="checkbox-label">${item.name}</span>
+            </label>
+        `).join('');
+    }
+}
 
 function addItem() {
     const input = document.getElementById('addInput');
@@ -63,7 +60,7 @@ function removeItem(btn) {
     btn.parentElement.remove();
 }
 
-function getRecommendation() {
+async function getRecommendation() {
     const selected = Array.from(document.querySelectorAll('input[name="discount"]:checked'))
         .map(cb => cb.value);
     const added = Array.from(document.querySelectorAll('.added-tag'))
@@ -76,20 +73,31 @@ function getRecommendation() {
         return;
     }
 
-    // 선택한 할인상품과 관련된 레시피 필터링
-    currentRecipes = mockRecipes.filter(recipe =>
-        recipe.relatedItems.some(item => all.includes(item))
-    );
+    try {
+        // API 호출
+        const response = await fetch(`${API_BASE}/discount/recommend`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: all })
+        });
 
-    // 결과가 없으면 전체 레시피 표시
-    if (currentRecipes.length === 0) {
-        currentRecipes = mockRecipes.slice(0, 2);
+        if (!response.ok) {
+            throw new Error('API 호출 실패');
+        }
+
+        const data = await response.json();
+        currentRecipes = data.recipes;
+
+        renderRecipeCards(currentRecipes);
+
+        document.getElementById('resultSection').hidden = false;
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('추천 API 오류:', error);
+        alert('추천을 가져오는데 실패했습니다. 다시 시도해주세요.');
     }
-
-    renderRecipeCards(currentRecipes);
-
-    document.getElementById('resultSection').hidden = false;
-    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
 }
 
 function renderRecipeCards(recipes) {
@@ -131,11 +139,29 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-function addToCart(recipeId) {
+async function addToCart(recipeId) {
     const recipe = currentRecipes.find(r => r.id === recipeId);
     if (!recipe) return;
 
-    alert(`${recipe.name}의 재료를 장바구니에 담았습니다!`);
+    try {
+        const cartItems = recipe.ingredients.map(name => ({ name, quantity: 1 }));
+        const response = await fetch(`${API_BASE}/cart/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: cartItems })
+        });
+
+        if (response.ok) {
+            alert(`${recipe.name}의 재료를 장바구니에 담았습니다!`);
+        } else {
+            throw new Error('장바구니 추가 실패');
+        }
+    } catch (error) {
+        console.error('장바구니 API 오류:', error);
+        alert('장바구니 추가에 실패했습니다.');
+    }
 }
 
 // 엔터키로 추가
