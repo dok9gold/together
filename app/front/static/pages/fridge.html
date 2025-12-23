@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요리 도우미 - 냉장고 털기</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/fridge.css">
+</head>
+<body>
+    <div class="feature-container">
+        <!-- 헤더 -->
+        <header class="feature-header">
+            <a href="smart.html" class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="header-title">
+                <h1>냉장고 털기</h1>
+                <p>있는 재료로 요리 찾기</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 컨텐츠 -->
+        <main class="feature-content">
+            <!-- 재료 선택 -->
+            <section class="input-section">
+                <h2>냉장고에 뭐 있어요?</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="삼겹살" onchange="updateSelected()">
+                        <span class="checkbox-label">삼겹살</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="대파" onchange="updateSelected()">
+                        <span class="checkbox-label">대파</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="양파" onchange="updateSelected()">
+                        <span class="checkbox-label">양파</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="마늘" onchange="updateSelected()">
+                        <span class="checkbox-label">마늘</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="계란" onchange="updateSelected()">
+                        <span class="checkbox-label">계란</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="두부" onchange="updateSelected()">
+                        <span class="checkbox-label">두부</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="김치" onchange="updateSelected()">
+                        <span class="checkbox-label">김치</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="ingredient" value="당근" onchange="updateSelected()">
+                        <span class="checkbox-label">당근</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- 직접 입력 -->
+            <section class="input-section">
+                <h2>재료 직접 추가</h2>
+                <div class="add-input-wrapper">
+                    <input type="text" id="addInput" placeholder="재료명 입력">
+                    <button class="add-btn" onclick="addItem()">추가</button>
+                </div>
+                <div class="added-items" id="addedItems"></div>
+            </section>
+
+            <!-- 선택된 재료 표시 -->
+            <section class="input-section">
+                <h2>선택된 재료</h2>
+                <p class="selected-display" id="selectedDisplay">없음</p>
+            </section>
+
+            <!-- 추천 버튼 -->
+            <button class="submit-btn" onclick="getRecommendation()">뭐 해먹을까?</button>
+
+            <!-- 결과 영역 -->
+            <section class="result-section" id="resultSection" hidden>
+                <h2>추천 결과</h2>
+                <div class="result-card" id="resultCard"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/fridge.js"></script>
+</body>
+</html>

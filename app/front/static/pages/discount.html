@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요리 도우미 - 할인상품 추천</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/discount.css">
+</head>
+<body>
+    <div class="feature-container">
+        <!-- 헤더 -->
+        <header class="feature-header">
+            <a href="smart.html" class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="header-title">
+                <h1>할인상품으로 뭐 해먹지?</h1>
+                <p>오늘의 할인상품 기반 추천</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 컨텐츠 -->
+        <main class="feature-content">
+            <!-- 오늘의 할인상품 -->
+            <section class="input-section">
+                <h2>오늘의 할인상품</h2>
+                <div class="discount-grid">
+                    <div class="discount-item">
+                        <span class="discount-badge">50%</span>
+                        <span class="discount-name">들기름</span>
+                    </div>
+                    <div class="discount-item">
+                        <span class="discount-badge">30%</span>
+                        <span class="discount-name">삼겹살</span>
+                    </div>
+                    <div class="discount-item">
+                        <span class="discount-badge">20%</span>
+                        <span class="discount-name">고추장</span>
+                    </div>
+                    <div class="discount-item">
+                        <span class="discount-badge">1+1</span>
+                        <span class="discount-name">두부</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 상품 선택 -->
+            <section class="input-section">
+                <h2>관심가는 상품을 선택하세요</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="discount" value="들기름">
+                        <span class="checkbox-label">들기름</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="discount" value="삼겹살">
+                        <span class="checkbox-label">삼겹살</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="discount" value="고추장">
+                        <span class="checkbox-label">고추장</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="discount" value="두부">
+                        <span class="checkbox-label">두부</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- 직접 입력 -->
+            <section class="input-section">
+                <h2>다른 할인상품 추가</h2>
+                <div class="add-input-wrapper">
+                    <input type="text" id="addInput" placeholder="상품명 입력">
+                    <button class="add-btn" onclick="addItem()">추가</button>
+                </div>
+                <div class="added-items" id="addedItems"></div>
+            </section>
+
+            <!-- 추천 버튼 -->
+            <button class="submit-btn" onclick="getRecommendation()">추천받기</button>
+
+            <!-- 결과 영역 -->
+            <section class="result-section" id="resultSection" hidden>
+                <h2>추천 결과</h2>
+                <div class="result-card" id="resultCard"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/discount.js"></script>
+</body>
+</html>

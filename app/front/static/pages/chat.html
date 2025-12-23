@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요리 도우미 - 채팅</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/chat.css">
+</head>
+<body>
+    <div class="feature-container">
+        <!-- 헤더 -->
+        <header class="chat-header">
+            <a href="smart.html" class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="header-title">
+                <h1>AI 요리 도우미</h1>
+                <p>무엇이든 물어보세요!</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 채팅 메시지 영역 -->
+        <main class="chat-messages" id="chatMessages">
+            <!-- AI 인사 메시지 -->
+            <div class="message ai">
+                <div class="message-content">
+                    안녕하세요! 요리 도우미입니다.<br><br>
+                    무엇을 도와드릴까요?<br>
+                    예: "삼겹살로 뭐 해먹지?", "간단한 저녁 추천해줘"
+                </div>
+            </div>
+        </main>
+
+        <!-- 입력 영역 -->
+        <footer class="chat-input-area">
+            <div class="input-wrapper">
+                <textarea
+                    id="userInput"
+                    placeholder="메시지를 입력하세요..."
+                    rows="1"
+                    maxlength="500"
+                ></textarea>
+                <button id="sendBtn" onclick="sendMessage()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="../js/chat.js"></script>
+</body>
+</html>

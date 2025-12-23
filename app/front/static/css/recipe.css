@@ -1,0 +1,94 @@
+/* 레시피 검색 페이지 전용 스타일 */
+
+/* 검색 입력 */
+.search-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.search-wrapper input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-wrapper input:focus {
+    border-color: #4a9d7c;
+}
+
+.search-btn {
+    width: 50px;
+    background-color: #4a9d7c;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.search-btn:hover {
+    background-color: #3d8568;
+}
+
+/* 태그 버튼 */
+.tag-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-btn {
+    padding: 8px 16px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag-btn:hover {
+    background-color: #4a9d7c;
+    border-color: #4a9d7c;
+    color: white;
+}
+
+/* 레시피 결과 */
+.recipe-header {
+    margin-bottom: 16px;
+}
+
+.recipe-header h3 {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.recipe-meta {
+    display: flex;
+    gap: 16px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.recipe-ingredients {
+    margin-bottom: 16px;
+}
+
+.recipe-ingredients h4 {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.recipe-ingredients p {
+    color: #555;
+}

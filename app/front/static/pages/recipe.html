@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요리 도우미 - 레시피 검색</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/recipe.css">
+</head>
+<body>
+    <div class="feature-container">
+        <!-- 헤더 -->
+        <header class="feature-header">
+            <a href="smart.html" class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="header-title">
+                <h1>레시피 검색</h1>
+                <p>요리명으로 레시피 찾기</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 컨텐츠 -->
+        <main class="feature-content">
+            <!-- 검색 입력 -->
+            <section class="input-section">
+                <h2>어떤 요리를 찾으세요?</h2>
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="요리명 입력 (예: 김치찌개)">
+                    <button class="search-btn" onclick="searchRecipe()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 인기 검색어 -->
+            <section class="input-section">
+                <h2>인기 검색어</h2>
+                <div class="tag-group">
+                    <button class="tag-btn" onclick="quickSearch('김치찌개')">김치찌개</button>
+                    <button class="tag-btn" onclick="quickSearch('된장찌개')">된장찌개</button>
+                    <button class="tag-btn" onclick="quickSearch('제육볶음')">제육볶음</button>
+                    <button class="tag-btn" onclick="quickSearch('불고기')">불고기</button>
+                    <button class="tag-btn" onclick="quickSearch('파스타')">파스타</button>
+                </div>
+            </section>
+
+            <!-- 결과 영역 -->
+            <section class="result-section" id="resultSection" hidden>
+                <h2>검색 결과</h2>
+                <div class="result-card" id="resultCard"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/recipe.js"></script>
+</body>
+</html>

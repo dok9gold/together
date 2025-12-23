@@ -1,0 +1,264 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+.feature-container {
+    max-width: 768px;
+    margin: 0 auto;
+    background-color: #fff;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 헤더 */
+.feature-header {
+    background: linear-gradient(135deg, #4a9d7c, #6bb596);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.header-title {
+    flex: 1;
+}
+
+.header-title h1 {
+    font-size: 1.3rem;
+    margin-bottom: 2px;
+}
+
+.header-title p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.header-spacer {
+    width: 40px;
+}
+
+/* 컨텐츠 */
+.feature-content {
+    padding: 24px 20px;
+}
+
+/* 입력 섹션 */
+.input-section {
+    margin-bottom: 28px;
+}
+
+.input-section h2 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+/* 체크박스 그룹 */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-label {
+    padding: 10px 18px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.checkbox-item input:checked + .checkbox-label {
+    background-color: #4a9d7c;
+    border-color: #4a9d7c;
+    color: white;
+}
+
+.checkbox-label:hover {
+    background-color: #e9ecef;
+}
+
+.checkbox-item input:checked + .checkbox-label:hover {
+    background-color: #3d8568;
+}
+
+/* 텍스트 입력 */
+.text-input-wrapper input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.text-input-wrapper input:focus {
+    border-color: #4a9d7c;
+}
+
+/* 제출 버튼 */
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #4a9d7c;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 24px;
+}
+
+.submit-btn:hover {
+    background-color: #3d8568;
+}
+
+/* 결과 섹션 */
+.result-section {
+    padding-top: 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.result-section h2 {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.result-card {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.result-intro {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.result-list {
+    margin-bottom: 16px;
+}
+
+.result-list h3 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.result-list ul {
+    padding-left: 20px;
+    color: #555;
+}
+
+.result-list li {
+    margin-bottom: 4px;
+}
+
+.result-list p {
+    color: #555;
+}
+
+.result-tip {
+    padding: 10px 14px;
+    background-color: #e8f5e9;
+    border-radius: 8px;
+    color: #2e7d32;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+}
+
+/* 액션 버튼 */
+.result-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background-color: #4a9d7c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #3d8568;
+}
+
+.action-btn.secondary {
+    background-color: white;
+    color: #4a9d7c;
+    border: 1px solid #4a9d7c;
+}
+
+.action-btn.secondary:hover {
+    background-color: #e8f5e9;
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+    .feature-header {
+        padding: 12px 16px;
+    }
+
+    .header-title h1 {
+        font-size: 1.1rem;
+    }
+
+    .feature-content {
+        padding: 20px 16px;
+    }
+
+    .result-actions {
+        flex-direction: column;
+    }
+}

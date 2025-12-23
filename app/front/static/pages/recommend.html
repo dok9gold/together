@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 요리 도우미 - 요리 추천</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/recommend.css">
+</head>
+<body>
+    <div class="feature-container">
+        <!-- 헤더 -->
+        <header class="feature-header">
+            <a href="smart.html" class="back-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="header-title">
+                <h1>요리 추천</h1>
+                <p>카테고리와 조건으로 추천받기</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- 컨텐츠 -->
+        <main class="feature-content">
+            <!-- 카테고리 선택 -->
+            <section class="input-section">
+                <h2>어떤 종류의 요리를 원하세요?</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="한식">
+                        <span class="checkbox-label">한식</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="중식">
+                        <span class="checkbox-label">중식</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="일식">
+                        <span class="checkbox-label">일식</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="category" value="양식">
+                        <span class="checkbox-label">양식</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- 조건 입력 -->
+            <section class="input-section">
+                <h2>추가 조건이 있으신가요?</h2>
+                <div class="text-input-wrapper">
+                    <input type="text" id="conditionInput" placeholder="예: 간단한 저녁, 매운 요리, 30분 이내">
+                </div>
+            </section>
+
+            <!-- 추천 버튼 -->
+            <button class="submit-btn" onclick="getRecommendation()">추천받기</button>
+
+            <!-- 결과 영역 -->
+            <section class="result-section" id="resultSection" hidden>
+                <h2>추천 결과</h2>
+                <div class="result-card" id="resultCard"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/recommend.js"></script>
+</body>
+</html>
