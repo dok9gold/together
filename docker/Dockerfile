@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir psycopg2-binary sqlalchemy asyncpg
 
 # 애플리케이션 코드 복사
 COPY app/ ./app/
+COPY core/ ./core/
 
 EXPOSE 8000
 

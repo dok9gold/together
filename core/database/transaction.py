@@ -9,7 +9,7 @@ import functools
 from collections.abc import Callable
 from contextlib import AsyncExitStack
 
-from database.base import BaseDatabase
+from core.database.base import BaseDatabase
 
 
 def transactional(*dbs: BaseDatabase, readonly: bool = False) -> Callable:
@@ -41,7 +41,7 @@ def transactional(*dbs: BaseDatabase, readonly: bool = False) -> Callable:
 
         @functools.wraps(func)
         async def wrapper_default(*args, **kwargs):
-            from database.registry import DatabaseRegistry
+            from core.database.registry import DatabaseRegistry
             db = DatabaseRegistry.get('default')
             async with db.transaction(readonly=readonly):
                 return await func(*args, **kwargs)
@@ -74,7 +74,7 @@ def transactional_readonly(*dbs: BaseDatabase) -> Callable:
 
         @functools.wraps(func)
         async def wrapper_default(*args, **kwargs):
-            from database.registry import DatabaseRegistry
+            from core.database.registry import DatabaseRegistry
             db = DatabaseRegistry.get('default')
             async with db.transaction(readonly=True):
                 return await func(*args, **kwargs)

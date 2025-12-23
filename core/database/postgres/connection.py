@@ -10,9 +10,9 @@ from typing import Any
 
 import asyncpg
 
-from database.base import BaseDatabase
-from database.context import set_connection, clear_connection
-from database.exception import (
+from core.database.base import BaseDatabase
+from core.database.context import set_connection, clear_connection
+from core.database.exception import (
     ConnectionPoolExhaustedError,
     ReadOnlyTransactionError,
 )
@@ -201,7 +201,6 @@ class PostgresDatabase(BaseDatabase):
         super().__init__(name)
         self._config = config
         self._pool: asyncpg.Pool | None = None
-        self._queries: dict[str, Any] = {}
 
     @classmethod
     async def create(cls, name: str, config: dict[str, Any]) -> 'PostgresDatabase':
@@ -264,18 +263,6 @@ class PostgresDatabase(BaseDatabase):
         if self._pool is None:
             raise RuntimeError(f"Database '{self.name}' not initialized")
         return self._pool
-
-    def load_queries(self, name: str, sql_path: str) -> Any:
-        """aiosql로 SQL 파일 로드"""
-        import aiosql
-        from database import get_aiosql_adapter
-        queries = aiosql.from_path(sql_path, get_aiosql_adapter(self.db_type))
-        self._queries[name] = queries
-        return queries
-
-    def get_queries(self, name: str) -> Any | None:
-        """로드된 쿼리 세트 반환"""
-        return self._queries.get(name)
 
     async def close(self) -> None:
         """데이터베이스 연결 종료"""
