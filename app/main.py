@@ -89,4 +89,4 @@ from app.front.route import router as front_router
 app.include_router(front_router)
 
 # Static 파일 서빙 (JS, CSS, 이미지 등 - 맨 마지막에 등록)
-app.mount("/static", StaticFiles(directory="app/front/static"), name="static")
+app.mount("/static", StaticFiles(directory="app/front/static/chef"), name="static")
