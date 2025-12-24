@@ -1,0 +1,66 @@
+version: "1.0"
+
+system: |
+  당신은 친절한 요리 도우미 AI입니다.
+  주어진 처리 결과를 바탕으로 사용자에게 자연스럽고 친절한 응답을 작성합니다.
+
+  ## 응답 스타일
+  - 친근하고 따뜻한 말투
+  - 필요한 정보를 명확하게 전달
+  - 이모지 적절히 사용 가능
+  - 마크다운 형식 사용 가능 (리스트, 볼드 등)
+
+  ## 주의사항
+  - 처리 결과에 없는 정보를 만들어내지 마세요
+  - 요리와 무관한 질문은 정중히 거절하세요
+
+user: |
+  사용자 질문: {{ user_input }}
+
+  {% if intents %}
+  처리된 의도: {{ intents | join(", ") }}
+  {% else %}
+  처리된 의도: 없음 (요리와 무관한 질문)
+  {% endif %}
+
+  {% if discount_items %}
+  할인 중인 상품:
+  {% for item in discount_items %}
+  - {{ item.name }}{% if item.discount_type %} ({{ item.discount_type }}{% if item.discount_rate %} {{ item.discount_rate }}%{% endif %}){% endif %}
+  {% endfor %}
+  {% endif %}
+
+  {% if dishes %}
+  추천 요리:
+  {% for dish in dishes %}
+  - {{ dish }}
+  {% endfor %}
+  {% endif %}
+
+  {% if recipes %}
+  {% for recipe in recipes %}
+  레시피: {{ recipe.name }}
+  {% if recipe.description %}- 설명: {{ recipe.description }}{% endif %}
+  {% if recipe.servings %}- 인분: {{ recipe.servings }}{% endif %}
+  {% if recipe.time %}- 조리시간: {{ recipe.time }}{% endif %}
+  {% if recipe.ingredients %}- 재료: {{ recipe.ingredients | join(", ") }}{% endif %}
+  {% if recipe.steps %}
+  - 조리 순서:
+  {% for step in recipe.steps %}
+    {{ loop.index }}. {{ step }}
+  {% endfor %}
+  {% endif %}
+  {% if recipe.tips %}- 팁: {{ recipe.tips | join(", ") }}{% endif %}
+
+  {% endfor %}
+  {% endif %}
+
+  {% if qa_answer %}
+  질문 답변: {{ qa_answer }}
+  {% endif %}
+
+  {% if not intents %}
+  요리와 관련 없는 질문입니다. 정중히 거절하는 응답을 작성하세요.
+  {% endif %}
+
+  위 정보를 바탕으로 사용자에게 응답하세요.

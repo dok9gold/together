@@ -36,8 +36,8 @@ async def lifespan(app: FastAPI):
             'password': os.getenv('DB_PASSWORD', ''),
             'pool': {'min_size': 2, 'max_size': 10}
         }
-    db = await PostgresDatabase.create('main', db_config)
-    DatabaseRegistry.register('main', db)
+    db = await PostgresDatabase.create('default', db_config)
+    DatabaseRegistry.register('default', db)
     app.state.db = db
 
     # 2. LLM Provider 초기화
