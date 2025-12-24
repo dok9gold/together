@@ -1,6 +1,6 @@
 // 냉장고 털기 페이지 JS - API 연동
 
-const API_BASE = '/api';
+const API_BASE = '/api/chef';
 
 let currentRecipes = [];
 let userIngredients = [];

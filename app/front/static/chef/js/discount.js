@@ -1,6 +1,6 @@
 // 할인상품 추천 페이지 JS - API 연동
 
-const API_BASE = '/api';
+const API_BASE = '/api/chef';
 
 let currentRecipes = [];
 

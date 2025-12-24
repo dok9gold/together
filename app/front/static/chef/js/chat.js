@@ -1,6 +1,6 @@
 // 채팅 페이지 JS - API 연동
 
-const API_BASE = '/api';
+const API_BASE = '/api/chef';
 
 const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
