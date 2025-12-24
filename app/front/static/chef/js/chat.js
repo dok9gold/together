@@ -7,6 +7,7 @@ const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
 
 let currentRecipes = [];
+let sessionId = null;  // 세션 ID (첫 요청 후 서버에서 받음)
 
 // 텍스트 영역 자동 높이 조절
 userInput.addEventListener('input', function() {
@@ -39,13 +40,16 @@ async function sendMessage() {
     showTypingIndicator();
 
     try {
-        // API 호출
+        // API 호출 (session_id 포함)
         const response = await fetch(`${API_BASE}/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({
+                message,
+                session_id: sessionId
+            })
         });
 
         if (!response.ok) {
@@ -53,6 +57,11 @@ async function sendMessage() {
         }
 
         const data = await response.json();
+
+        // 세션 ID 저장 (첫 응답에서 받음)
+        if (data.session_id) {
+            sessionId = data.session_id;
+        }
 
         // 타이핑 인디케이터 제거
         hideTypingIndicator();
