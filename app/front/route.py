@@ -4,7 +4,7 @@ import os
 
 router = APIRouter()
 
-STATIC_DIR = "app/front/static"
+STATIC_DIR = "app/front/static/chef"
 
 
 @router.get("/")
