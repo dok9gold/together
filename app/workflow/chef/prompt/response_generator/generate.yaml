@@ -23,17 +23,10 @@ user: |
   처리된 의도: 없음 (요리와 무관한 질문)
   {% endif %}
 
-  {% if discount_items %}
-  할인 중인 상품:
-  {% for item in discount_items %}
-  - {{ item.name }}{% if item.discount_type %} ({{ item.discount_type }}{% if item.discount_rate %} {{ item.discount_rate }}%{% endif %}){% endif %}
-  {% endfor %}
-  {% endif %}
-
   {% if dishes %}
   추천 요리:
   {% for dish in dishes %}
-  - {{ dish }}
+  - {{ dish.name }}{% if dish.discount_items %} (할인: {% for d in dish.discount_items %}{{ d.name }} {{ d.discount_rate }}%{% if not loop.last %}, {% endif %}{% endfor %}){% endif %}
   {% endfor %}
   {% endif %}
 

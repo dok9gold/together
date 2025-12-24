@@ -30,10 +30,9 @@ class ResponseGeneratorNode(BaseNode):
         """
         user_input = state.get("user_input", "")
         intents = state.get("intents", [])
-        dishes = state.get("dishes", [])
+        dishes = state.get("dishes", [])  # [{"name": "...", "discount_items": [...]}]
         recipes = state.get("recipes", [])
         qa_answer = state.get("qa_answer")
-        discount_items = state.get("discount_items", [])
 
         # 프롬프트 렌더링
         prompts = render_prompt(
@@ -42,8 +41,7 @@ class ResponseGeneratorNode(BaseNode):
             intents=intents,
             dishes=dishes,
             recipes=recipes,
-            qa_answer=qa_answer,
-            discount_items=discount_items
+            qa_answer=qa_answer
         )
 
         logger.debug(f"[ResponseGenerator] intents: {intents}, dishes: {dishes}")

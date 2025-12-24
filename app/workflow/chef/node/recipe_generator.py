@@ -40,7 +40,7 @@ class RecipeGeneratorNode(BaseNode):
         Returns:
             {"recipes": list[dict]}
         """
-        dishes = state.get("dishes", [])
+        dishes = state.get("dishes", [])  # [{"name": "...", "discount_items": [...]}]
         entities = state.get("entities", {})
 
         if not dishes:
@@ -49,7 +49,10 @@ class RecipeGeneratorNode(BaseNode):
 
         # 전체 dishes 순회
         recipes = []
-        for dish_name in dishes:
+        for dish in dishes:
+            dish_name = dish.get("name", "") if isinstance(dish, dict) else dish
+            discount_items = dish.get("discount_items", []) if isinstance(dish, dict) else []
+
             normalized_name = normalize_dish_name(dish_name)
             logger.debug(f"[RecipeGenerator] dish: {dish_name}, normalized: {normalized_name}")
 
@@ -57,6 +60,8 @@ class RecipeGeneratorNode(BaseNode):
             cached = await self._fetch_recipe(normalized_name)
             if cached:
                 logger.info(f"[RecipeGenerator] Cache hit: {dish_name}")
+                # 캐시된 레시피에 discount_items 추가
+                cached["discount_items"] = discount_items
                 recipes.append(cached)
                 continue
 
@@ -65,6 +70,8 @@ class RecipeGeneratorNode(BaseNode):
             recipe = await self._generate_recipe(dish_name, entities.get("servings"))
             if recipe:
                 await self._save_recipe(normalized_name, dish_name, recipe)
+                # 생성된 레시피에 discount_items 추가
+                recipe["discount_items"] = discount_items
                 recipes.append(recipe)
 
         return {"recipes": recipes}
@@ -124,7 +131,13 @@ async def _fetch_recipe_from_db(normalized_name: str) -> dict | None:
         "SELECT content FROM recipe WHERE dish_name = $1",
         normalized_name
     )
-    return row["content"] if row else None
+    if not row:
+        return None
+    content = row["content"]
+    # asyncpg가 str로 반환하면 파싱
+    if isinstance(content, str):
+        return json.loads(content)
+    return content
 
 
 @transactional

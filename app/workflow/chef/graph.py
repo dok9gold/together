@@ -242,11 +242,8 @@ class ChefWorkflow:
     def _route_after_recommender(self, state: State) -> str:
         """recommender 후 다음 노드 결정"""
         intents = state.get("intents", [])
-
-        # recipe가 intents에 있으면 recipe_generator로
         if "recipe" in intents:
             return "recipe_generator"
-
         return "response_generator"
 
     async def run(
@@ -281,7 +278,6 @@ class ChefWorkflow:
             "user_input": user_input,
             "intents": [],
             "entities": {},
-            "discount_items": [],
             "dishes": [],
             "recipes": [],
             "qa_answer": None,

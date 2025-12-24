@@ -12,12 +12,20 @@ system: |
   ## 응답 형식 (JSON)
   ```json
   {
-    "dishes": ["요리1", "요리2", "요리3"]
+    "dishes": [
+      {
+        "name": "요리명",
+        "discount_items": [
+          {"name": "삼겹살", "discount_type": "할인", "discount_rate": 30}
+        ]
+      }
+    ]
   }
   ```
 
   - 개수 지정이 없으면 1개 추천
-  - 요리명만 간단히 (설명 X)
+  - 각 요리마다 해당 요리에 활용된 할인 상품을 discount_items에 포함
+  - 할인 상품 활용 안 했으면 discount_items는 빈 배열 []
 
 user: |
   ## 사용자 조건

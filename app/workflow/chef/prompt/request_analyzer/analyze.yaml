@@ -19,17 +19,22 @@ system: |
   - qa: 요리 관련 질문 (조리법, 재료 대체, 보관법 등)
 
   ## 중요: recipe 의도 판단 규칙
-  - recipe는 반드시 dish_name이 있어야 사용 가능
-  - "레시피 알려줘"라고 해도 dish_name이 없으면 recommend 먼저!
-  - 예: "맛있는 음식 레시피" → intents: ["recommend", "recipe"] (dish_name 없음)
-  - 예: "김치찌개 레시피" → intents: ["recipe"], entities: {dish_name: "김치찌개"}
-  - 예: "간단한 저녁 추천해주고 레시피도" → intents: ["recommend", "recipe"]
+  - recipe는 반드시 dishes가 있어야 사용 가능
+  - "레시피 알려줘"라고 해도 dishes가 없으면 recommend 먼저!
+  - 예: "맛있는 음식 레시피" → intents: ["recommend", "recipe"], dishes: []
+  - 예: "김치찌개 레시피" → intents: ["recipe"], dishes: ["김치찌개"]
+  - 예: "간단한 저녁 추천해주고 레시피도" → intents: ["recommend", "recipe"], dishes: []
+
+  ## dishes (요리 목록)
+  사용자가 특정 요리명을 언급하면 dishes 배열에 넣으세요.
+  - "김치찌개 레시피" → dishes: ["김치찌개"]
+  - "된장찌개랑 김치찌개" → dishes: ["된장찌개", "김치찌개"]
+  - 특정 요리 언급 없으면 빈 배열 []
 
   ## 개체 추출 (entities)
-  요리 추천/레시피/질문에 필요한 정보를 자유롭게 추출하세요.
+  요리 추천/질문에 필요한 조건 정보를 추출하세요.
 
   예시:
-  - dish_name: 특정 요리명
   - cuisine: 요리 종류 (한식, 중식 등)
   - ingredients: 재료 목록
   - count: 추천 개수
@@ -37,12 +42,13 @@ system: |
   - time_limit: 조리 시간 제한
   - dietary: 식이 제한
   - use_discount: 할인 상품 활용 여부 (boolean)
-  - 그 외 요리 관련 정보
+  - 그 외 요리 관련 조건
 
   ## 응답 형식 (JSON)
   ```json
   {
     "intents": ["primary_intent", "secondary_intent"],
+    "dishes": ["요리명1", "요리명2"],
     "entities": {
       "key": "value"
     }
@@ -50,8 +56,9 @@ system: |
   ```
 
   - intents는 우선순위 순으로 정렬 (먼저 처리할 것이 앞에)
+  - dishes는 특정 요리명이 있을 때만 (없으면 빈 배열)
   - 요리와 무관한 요청만 있으면 intents는 빈 배열 []
-  - entities는 추출된 것만 포함 (없으면 빈 객체)
+  - entities는 추출된 조건만 포함 (없으면 빈 객체)
 
 user: |
   사용자 입력: {{ user_input }}

@@ -2,7 +2,7 @@
 
 from core.llm import LLMProvider
 from app.service.chef.model.chat import ChatRequest, ChatResponse
-from app.service.chef.model.common import RecipeItem
+from app.service.chef.model.common import RecipeItem, DiscountInfo
 from app.workflow.chef.graph import ChefWorkflow
 
 
@@ -40,6 +40,16 @@ class ChatService:
         """State의 recipes를 RecipeItem 리스트로 변환"""
         result = []
         for recipe in state_recipes:
+            # 레시피에 포함된 discount_items에서 DiscountInfo 생성
+            discount_items = recipe.get("discount_items", [])
+            discount_info = [
+                DiscountInfo(
+                    item=d.get("name", ""),
+                    rate=f"{d.get('discount_rate')}%" if d.get("discount_rate") else d.get("discount_type", "")
+                )
+                for d in discount_items
+            ] if discount_items else None
+
             result.append(RecipeItem(
                 id=recipe.get("id", ""),
                 name=recipe.get("name", ""),
@@ -47,6 +57,6 @@ class ChatService:
                 difficulty=recipe.get("difficulty", "보통"),
                 ingredients=recipe.get("ingredients", []),
                 steps=recipe.get("steps", []),
-                discountInfo=None  # TODO: discount_items 연동
+                discountInfo=discount_info
             ))
         return result

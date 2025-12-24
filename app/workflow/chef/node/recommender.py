@@ -30,11 +30,11 @@ class RecommenderNode(BaseNode):
             config: 설정
 
         Returns:
-            {"dishes": list[str], "discount_items": list[dict]}
+            {"dishes": [{"name": "요리명", "discount_items": [...]}]}
         """
         entities = state.get("entities", {})
 
-        # 할인 상품 조회 (use_discount=true일 때)
+        # 할인 상품 조회 (use_discount=true일 때) - 프롬프트용
         discount_items = []
         if entities.get("use_discount"):
             discount_items = await self._fetch_discount_items()
@@ -55,12 +55,12 @@ class RecommenderNode(BaseNode):
             option={"temperature": 0.7, "max_tokens": 1024}
         )
 
-        # dishes 파싱
+        # dishes 파싱 (새 구조: [{name, discount_items}, ...])
         dishes = self._parse_response(response)
 
-        logger.info(f"[Recommender] recommended dishes: {dishes}")
+        logger.info(f"[Recommender] recommended dishes: {[d.get('name') for d in dishes]}")
 
-        return {"dishes": dishes, "discount_items": discount_items}
+        return {"dishes": dishes}
 
     async def _fetch_discount_items(self) -> list[dict]:
         """할인 상품 조회"""
@@ -70,8 +70,8 @@ class RecommenderNode(BaseNode):
             logger.warning(f"[Recommender] 할인 상품 조회 실패: {e}")
             return []
 
-    def _parse_response(self, response: str) -> list[str]:
-        """LLM 응답에서 dishes 파싱"""
+    def _parse_response(self, response: str) -> list[dict]:
+        """LLM 응답에서 dishes 파싱 (새 구조)"""
         try:
             text = response.strip()
             if "```json" in text:
@@ -80,7 +80,20 @@ class RecommenderNode(BaseNode):
                 text = text.split("```")[1].split("```")[0].strip()
 
             data = json.loads(text)
-            return data.get("dishes", [])
+            dishes = data.get("dishes", [])
+
+            # 각 dish가 올바른 구조인지 확인
+            result = []
+            for dish in dishes:
+                if isinstance(dish, str):
+                    # 이전 형식 호환: 문자열이면 dict로 변환
+                    result.append({"name": dish, "discount_items": []})
+                elif isinstance(dish, dict):
+                    result.append({
+                        "name": dish.get("name", ""),
+                        "discount_items": dish.get("discount_items", [])
+                    })
+            return result
         except (json.JSONDecodeError, IndexError) as e:
             logger.warning(f"[Recommender] JSON 파싱 실패: {e}, response: {response[:200]}")
             return []

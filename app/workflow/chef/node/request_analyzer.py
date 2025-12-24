@@ -27,7 +27,7 @@ class RequestAnalyzerNode(BaseNode):
             config: {"configurable": {"chat_history": [...]}}
 
         Returns:
-            {"intents": list[str], "entities": dict}
+            {"intents": list[str], "dishes": list[str], "entities": dict}
         """
         user_input = state.get("user_input", "")
         chat_history = []
@@ -54,10 +54,11 @@ class RequestAnalyzerNode(BaseNode):
         # JSON 파싱
         result = self._parse_response(response)
 
-        logger.info(f"[RequestAnalyzer] intents: {result['intents']}, entities: {result['entities']}")
+        logger.info(f"[RequestAnalyzer] intents: {result['intents']}, dishes: {result['dishes']}, entities: {result['entities']}")
 
         return {
             "intents": result["intents"],
+            "dishes": result["dishes"],
             "entities": result["entities"]
         }
 
@@ -68,7 +69,7 @@ class RequestAnalyzerNode(BaseNode):
             response: LLM 응답 텍스트
 
         Returns:
-            {"intents": list, "entities": dict}
+            {"intents": list, "dishes": list, "entities": dict}
         """
         try:
             # JSON 블록 추출 (```json ... ``` 형식 지원)
@@ -82,11 +83,13 @@ class RequestAnalyzerNode(BaseNode):
 
             return {
                 "intents": data.get("intents", ["general_chat"]),
+                "dishes": data.get("dishes", []),
                 "entities": data.get("entities", {})
             }
         except (json.JSONDecodeError, IndexError) as e:
             logger.warning(f"[RequestAnalyzer] JSON 파싱 실패: {e}, response: {response[:200]}")
             return {
                 "intents": ["general_chat"],
+                "dishes": [],
                 "entities": {}
             }

@@ -109,11 +109,13 @@ function renderRecipeCard(recipe) {
             <div class="recipe-card-header">
                 <h3>${recipe.name}</h3>
                 <div class="recipe-card-actions">
-                    <button class="btn-recipe" onclick="showRecipeModal('${recipe.id}')">레시피</button>
+                    ${recipe.steps && recipe.steps.length > 0
+                        ? `<button class="btn-recipe" onclick="showRecipeModal('${recipe.id}')">레시피</button>`
+                        : ''}
                     <button class="btn-cart" onclick="addToCart('${recipe.id}')">담기</button>
                 </div>
             </div>
-            <p class="recipe-card-ingredients">재료: ${recipe.ingredients.join(', ')}</p>
+            <p class="recipe-card-ingredients">재료: ${recipe.ingredients.slice(0, 3).join(', ')}${recipe.ingredients.length > 3 ? ` 외 ${recipe.ingredients.length - 3}개` : ''}</p>
             ${recipe.discountInfo && recipe.discountInfo.length > 0
                 ? `<span class="recipe-card-discount">${recipe.discountInfo.map(d => `${d.item} ${d.rate} 할인`).join(', ')}</span>`
                 : ''}
