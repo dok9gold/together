@@ -1,5 +1,5 @@
-from app.service.model.chat import ChatRequest, ChatResponse
-from app.service.model.common import RecipeItem, DiscountInfo
+from app.service.chef.model.chat import ChatRequest, ChatResponse
+from app.service.chef.model.common import RecipeItem, DiscountInfo
 
 
 class ChatService:

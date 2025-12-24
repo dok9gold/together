@@ -1,5 +1,5 @@
 from typing import List
-from app.service.model.cart import CartItem, CartAddRequest, CartAddResponse
+from app.service.chef.model.cart import CartItem, CartAddRequest, CartAddResponse
 
 
 # 메모리 기반 장바구니 (Mock)

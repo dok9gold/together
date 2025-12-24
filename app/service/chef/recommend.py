@@ -1,5 +1,5 @@
-from app.service.model.recommend import RecommendRequest, RecommendResponse
-from app.service.model.common import RecipeItem, DiscountInfo
+from app.service.chef.model.recommend import RecommendRequest, RecommendResponse
+from app.service.chef.model.common import RecipeItem, DiscountInfo
 
 
 # Mock 레시피 데이터

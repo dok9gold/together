@@ -1,6 +1,8 @@
-"""Chef 서비스 모델"""
-
-from app.service.chef.model.request import ChefRequest
-from app.service.chef.model.response import ChefResponse
-
-__all__ = ["ChefRequest", "ChefResponse"]
+# Service Models (Request/Response Schemas)
+from .common import DiscountInfo, RecipeItem
+from .chat import ChatRequest, ChatResponse, ChatAction
+from .recommend import RecommendRequest, RecommendResponse
+from .recipe import RecipeSearchResponse, RecipeDetail, IngredientDetail, StepDetail
+from .discount import DiscountItem, DiscountRecommendRequest, DiscountRecommendResponse, DiscountRecipeItem
+from .fridge import FridgeRecommendRequest, FridgeRecommendResponse, FridgeRecipeItem
+from .cart import CartItem, CartAddRequest, CartAddResponse

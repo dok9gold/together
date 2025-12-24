@@ -1,9 +1,9 @@
-from app.service.model.fridge import (
+from app.service.chef.model.fridge import (
     FridgeRecommendRequest,
     FridgeRecommendResponse,
     FridgeRecipeItem
 )
-from app.service.model.common import DiscountInfo
+from app.service.chef.model.common import DiscountInfo
 
 
 # 냉장고 재료 기반 레시피 Mock

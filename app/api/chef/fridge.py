@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from app.service.model.fridge import FridgeRecommendRequest, FridgeRecommendResponse
-from app.service.fridge import FridgeService
+from app.service.chef.model.fridge import FridgeRecommendRequest, FridgeRecommendResponse
+from app.service.chef.fridge import FridgeService
 
 router = APIRouter(prefix="/fridge", tags=["fridge"])
 

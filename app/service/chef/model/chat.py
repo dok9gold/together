@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Literal, Any
-from app.service.model.common import RecipeItem
+from app.service.chef.model.common import RecipeItem
 
 
 class ChatRequest(BaseModel):

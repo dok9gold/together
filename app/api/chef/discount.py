@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from typing import List
-from app.service.model.discount import (
+from app.service.chef.model.discount import (
     DiscountItem,
     DiscountRecommendRequest,
     DiscountRecommendResponse
 )
-from app.service.discount import DiscountService
+from app.service.chef.discount import DiscountService
 
 router = APIRouter(prefix="/discount", tags=["discount"])
 

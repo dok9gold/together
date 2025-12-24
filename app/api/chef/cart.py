@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import List
-from app.service.model.cart import CartItem, CartAddRequest, CartAddResponse
-from app.service.cart import CartService
+from app.service.chef.model.cart import CartItem, CartAddRequest, CartAddResponse
+from app.service.chef.cart import CartService
 
 router = APIRouter(prefix="/cart", tags=["cart"])
 

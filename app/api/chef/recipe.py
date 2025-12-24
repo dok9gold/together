@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from app.service.model.recipe import RecipeSearchResponse, RecipeDetail
-from app.service.recipe import RecipeService
+from app.service.chef.model.recipe import RecipeSearchResponse, RecipeDetail
+from app.service.chef.recipe import RecipeService
 
 router = APIRouter(prefix="/recipe", tags=["recipe"])
 

@@ -1,11 +1,11 @@
 from typing import List
-from app.service.model.discount import (
+from app.service.chef.model.discount import (
     DiscountItem,
     DiscountRecommendRequest,
     DiscountRecommendResponse,
     DiscountRecipeItem
 )
-from app.service.model.common import DiscountInfo
+from app.service.chef.model.common import DiscountInfo
 
 
 # 오늘의 할인상품 Mock

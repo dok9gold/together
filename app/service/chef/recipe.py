@@ -1,6 +1,6 @@
 from typing import List, Optional
-from app.service.model.recipe import RecipeSearchResponse, RecipeDetail, IngredientDetail, StepDetail
-from app.service.model.common import RecipeItem
+from app.service.chef.model.recipe import RecipeSearchResponse, RecipeDetail, IngredientDetail, StepDetail
+from app.service.chef.model.common import RecipeItem
 
 
 # Mock 레시피 데이터
