@@ -288,7 +288,7 @@ class ChefWorkflow:
             "response": None,
         }
 
-        config = {"chat_history": chat_history}
+        config = {"configurable": {"chat_history": chat_history}}
 
         logger.info(f"[ChefWorkflow] Starting with input: {user_input[:50]}...")
 
