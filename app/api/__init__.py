@@ -1,6 +1,6 @@
 # API routes
 from fastapi import APIRouter
-from app.api import chat, recommend, recipe, discount, fridge, cart
+from app.api import chat, recommend, recipe, discount, fridge, cart, chef
 
 router = APIRouter(prefix="/api")
 
@@ -11,3 +11,4 @@ router.include_router(recipe.router)
 router.include_router(discount.router)
 router.include_router(fridge.router)
 router.include_router(cart.router)
+router.include_router(chef.router)
